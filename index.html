@@ -125,6 +125,7 @@ html[data-theme="dark"] .toast{background:#243653;color:#f4f7fc}
 #publishResult{scroll-margin-top:90px}
 @media(max-width:620px){.appearance-card{grid-template-columns:1fr}.appearance-copy{align-items:flex-start}}
 
+.sync-status{margin:0 0 14px;padding:10px 13px;border-radius:12px;font-size:.86rem;font-weight:650;border:1px solid var(--line,#dbe3ee);background:var(--card,#fff);color:var(--muted,#5c6b80)}.sync-status.ok{color:#16845b;background:rgba(22,132,91,.09);border-color:rgba(22,132,91,.25)}.sync-status.error{color:#c43b42;background:rgba(196,59,66,.09);border-color:rgba(196,59,66,.25)}.sync-status.info{color:var(--muted,#5c6b80)}
 </style>
 </head>
 <body>
@@ -134,9 +135,10 @@ html[data-theme="dark"] .toast{background:#243653;color:#f4f7fc}
 <aside class="side"><div class="side-label">Operaciones</div><nav class="nav" id="sideNav"><button class="active" data-page="dashboard"><span>▦</span>Panel general</button><button data-page="new"><span>＋</span>Publicar aviso</button><button data-page="active"><span>◉</span>Avisos activos</button><button data-page="history"><span>◷</span>Historial</button><button data-page="help"><span>⚙</span>Configuración</button></nav><div class="side-note"><b>ConectaBus · Central</b>Desde aquí se preparan los avisos que verá cada pasajero según la línea que haya seleccionado.</div></aside>
 <main class="main">
 <div id="storageWarning" class="storage-warning hidden" role="alert" aria-live="assertive"></div>
+<div id="supabaseStatus" class="sync-status info" role="status" aria-live="polite">● Conectando con la base compartida…</div>
 <section id="page-dashboard" class="page">
 <div class="pagehead"><div><div class="eyebrow">Resumen del servicio</div><h1>Panel general</h1><p>Controlá las novedades de las líneas y revisá qué información está activa.</p></div><button class="btn primary" data-go="new">＋ Nuevo aviso</button></div>
-<div class="warning" style="margin:0 0 16px"><b>Modo de prueba local</b> Los avisos publicados se muestran en esta Central y en este navegador. Todavía no se envían a ConectaBus ni a otros dispositivos.</div>
+<div class="warning" style="margin:0 0 16px"><b>Modo de demostración compartida</b> Los avisos se guardan en Supabase y pueden aparecer en ConectaBus para la línea correspondiente. Todavía no son reportes oficiales del transporte.</div>
 <div id="publishResult" class="publish-result hidden" role="status" aria-live="polite"><div><b id="publishResultTitle">¡Aviso publicado!</b><p id="publishResultText"></p></div><div class="result-actions"><button class="btn outline small" data-go="active">Ver avisos activos</button><button class="btn outline small" data-go="history">Ver historial</button></div></div>
 <div class="grid stats"><div class="card stat"><div><div class="stat-label">Avisos activos</div><div class="stat-num" id="statActive">0</div><div class="stat-note">Publicados desde esta central</div></div><div class="stat-icon">📢</div></div><div class="card stat"><div><div class="stat-label">Demoras</div><div class="stat-num" id="statDelay">0</div><div class="stat-note">Con impacto en el horario</div></div><div class="stat-icon">⏱️</div></div><div class="card stat"><div><div class="stat-label">Avisos urgentes</div><div class="stat-num" id="statUrgent">0</div><div class="stat-note">Requieren atención</div></div><div class="stat-icon">⚠️</div></div><div class="card stat"><div><div class="stat-label">Colectivos con novedades</div><div class="stat-num" id="statLines">0</div><div class="stat-note">Líneas distintas afectadas</div></div><div class="stat-icon">🚌</div></div></div>
 <div class="grid"><div class="card"><div class="section-title"><div><h2>Últimos avisos publicados</h2><p>Las novedades más recientes de la central.</p></div><button class="btn ghost small" data-go="active">Ver todos</button></div><div id="dashboardNotices" class="notice-list"></div></div></div>
@@ -169,6 +171,10 @@ html[data-theme="dark"] .toast{background:#243653;color:#f4f7fc}
 <script>
 (()=>{
 'use strict';
+const SUPABASE_URL='https://rhrtecgsoieklktybmeq.supabase.co';
+const SUPABASE_KEY='sb_publishable_2hBGLhmo_dTuaBTkzL18bg_02YyKRg8';
+const SUPABASE_TABLE='avisos_demo';
+let supabaseOnline=false;
 const KEY='central_conectabus_notices_v1';let storageProblem='';let dataProblem='';let persistenceMode='persistent';let notices=load();let severity='medium';let editingId=null;let submitting=false;
 const $=id=>document.getElementById(id);
 const typeNames={demora:'Demora',desvio:'Desvío',corte:'Calle cortada',accidente:'Accidente / incidente',parada_suspendida:'Parada suspendida',parada_movida:'Parada trasladada',frecuencia:'Frecuencia reducida',interrupcion:'Interrupción',unidad:'Unidad fuera de servicio',ocupacion:'Alta ocupación',cambio:'Cambio de recorrido',refuerzo:'Refuerzo de unidades',normalizado:'Servicio normalizado',informacion:'Información importante'};
@@ -209,6 +215,7 @@ function checkStorage(){
 }
 function showStorageWarning(){
  const box=$('storageWarning');if(!box)return;
+ if(supabaseOnline){box.classList.add('hidden');box.textContent='';return;}
  if(persistenceMode==='persistent'&&!dataProblem){box.classList.add('hidden');box.textContent='';return;}
  box.classList.remove('hidden');
  const reason=dataProblem||storageProblem||'El navegador no permite guardar datos de forma permanente.';
@@ -225,6 +232,53 @@ function save(list=notices){
   showStorageWarning();return !dataProblem;
  }catch(e){persistenceMode='memory';storageProblem=storageError(e);showStorageWarning();return false;}
 }
+
+async function supabaseRequest(path,options={}){
+ const headers={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Accept':'application/json',...(options.headers||{})};
+ let response;
+ try{response=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...options,headers});}
+ catch(err){throw new Error('No se pudo conectar con Supabase. Revisá tu conexión a internet y volvé a intentar. Detalle: '+(err&&err.message||err));}
+ const raw=await response.text();let data=null;
+ if(raw){try{data=JSON.parse(raw)}catch(_){data=raw}}
+ if(!response.ok){
+  const detail=data&&typeof data==='object'?(data.message||data.details||data.hint||JSON.stringify(data)):String(data||'');
+  if(response.status===401||response.status===403)throw new Error('Supabase rechazó la clave o los permisos (HTTP '+response.status+'). Revisá la clave publicable y las políticas de avisos_demo. '+detail);
+  if(response.status===404)throw new Error('No se encontró la tabla avisos_demo o la ruta de la API (HTTP 404). Confirmá que el SQL se ejecutó en el proyecto correcto. '+detail);
+  throw new Error('Supabase respondió HTTP '+response.status+'. '+detail);
+ }
+ return data;
+}
+function mapSupabaseNotice(r){
+ const created=Date.parse(r.creado_en)||Date.now(),updated=Date.parse(r.actualizado_en)||created,expires=r.vence_en?Date.parse(r.vence_en):null;
+ return {id:String(r.id),line:String(r.linea),type:r.tipo,severity:r.gravedad||'medium',title:r.titulo,detail:r.descripcion,location:r.ubicacion,direction:r.sentido||'Ambos sentidos',scope:r.alcance||'Punto o tramo específico',delay:r.demora_minutos==null?'':String(r.demora_minutos),duration:r.duracion||'Hasta nuevo aviso',status:r.estado==='normalizado'?'resolved':r.estado==='cancelado'?'expired':'active',notify:!!r.notificar,createdAt:new Date(created).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'}),createdMs:created,updatedAt:new Date(updated).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'}),updatedMs:updated,expiresMs:expires,remote:true};
+}
+function supabaseNoticePayload(v,status='activo'){
+ return {linea:String(v.line),tipo:v.type,gravedad:v.severity||'medium',titulo:v.title,descripcion:v.detail,ubicacion:v.location,sentido:v.direction||'Ambos sentidos',alcance:v.scope||'Punto o tramo específico',demora_minutos:v.delay!==''&&v.delay!=null?Number(v.delay):null,duracion:v.duration||'Hasta nuevo aviso',estado:status,notificar:!!v.notify,vence_en:v.expiresMs?new Date(v.expiresMs).toISOString():null,actualizado_en:new Date().toISOString()};
+}
+function setSupabaseStatus(message,kind='info'){
+ const el=$('supabaseStatus');if(!el)return;
+ el.textContent=message;el.className='sync-status '+kind;
+}
+async function refreshRemoteNotices(showError=false){
+ if(editingId)return;
+ try{
+  const rows=await supabaseRequest(SUPABASE_TABLE+'?select=*&order=creado_en.desc&limit=200');
+  if(!Array.isArray(rows))throw new Error('La API no devolvió una lista de avisos.');
+  notices=rows.map(mapSupabaseNotice);
+  supabaseOnline=true;
+  try{window.localStorage.setItem(KEY,JSON.stringify(notices));}catch(_){}
+  renderDashboard();renderActive();renderHistory();
+  setSupabaseStatus('● Conectada a Supabase · '+notices.length+' aviso(s) sincronizados','ok');
+  showStorageWarning();
+  return true;
+ }catch(err){
+  supabaseOnline=false;
+  setSupabaseStatus('● Sin conexión con la base compartida: '+err.message,'error');
+  if(showError)toast('No se pudieron cargar los avisos: '+err.message);
+  return false;
+ }
+}
+
 function expireOld(){let changed=false;const t=Date.now();notices.forEach(n=>{if(n.status==='active'&&n.expiresMs&&t>=n.expiresMs){n.status='expired';n.expiredAt=now();changed=true}});if(changed)save()}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function line(){return $('line').value==='__other'?$('otherLine').value.trim():$('line').value}
@@ -265,14 +319,14 @@ function renderDashboard(){expireOld();const active=notices.filter(n=>n.status==
 function renderActive(){expireOld();const q=$('filterSearch').value.toLowerCase(),t=$('filterType').value;const items=notices.filter(n=>n.status==='active'&&(!t||n.type===t)&&[n.line,n.title,n.location,n.detail].join(' ').toLowerCase().includes(q)).sort((a,b)=>b.createdMs-a.createdMs);$('activeList').innerHTML=items.length?items.map(n=>makeCard(n,true)).join(''):'<div class="empty"><div class="big">✅</div><b>No hay avisos activos</b>Podés publicar uno nuevo desde la central.</div>'}
 function renderHistory(){expireOld();const items=notices.slice().sort((a,b)=>b.createdMs-a.createdMs);$('historyTable').innerHTML=items.length?`<table class="table"><thead><tr><th>Línea</th><th>Tipo / título</th><th>Zona</th><th>Publicado</th><th>Estado</th></tr></thead><tbody>${items.map(n=>`<tr><td><strong>${esc(n.line)}</strong></td><td>${esc(typeNames[n.type]||n.type)}<br><span style="color:#7b879a">${esc(n.title)}</span></td><td>${esc(n.location)}</td><td>${esc(n.createdAt)}</td><td>${n.status==='active'?'<span class="badge-status">Activo</span>':n.status==='expired'?'<span class="badge-status off">Vencido</span>':'<span class="badge-status off">Normalizado</span>'}</td></tr>`).join('')}</tbody></table>`:'<div class="empty"><div class="big">🗂️</div><b>El historial está vacío</b>Los avisos publicados quedarán registrados acá.</div>'}
 $('filterSearch').addEventListener('input',renderActive);$('filterType').addEventListener('change',renderActive);
-document.addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');if(edit){const n=notices.find(x=>x.id===edit.dataset.edit);if(n){editingId=n.id;$('line').value=routeStops[n.line]?n.line:'__other';$('otherLineWrap').classList.toggle('hidden',$('line').value!=='__other');$('otherLine').required=$('line').value==='__other';$('otherLine').value=routeStops[n.line]?'':n.line;$('direction').value=n.direction;$('scope').value=n.scope;$('type').value=n.type;refreshLocationOptions(n.location);$('delay').value=n.delay||'';$('duration').value=n.duration;$('title').value=n.title;$('detail').value=n.detail;$('notify').checked=!!n.notify;$('showDelay').checked=!!(n.delay);severity=n.severity;document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.severity===severity));$('noticeForm').querySelector('button[type=submit]').textContent='Guardar actualización';updatePreview();go('new')}}const close=e.target.closest('[data-resolve]');if(close){const index=notices.findIndex(x=>x.id===close.dataset.resolve);if(index>=0){const candidate=notices.slice();candidate[index]={...candidate[index],status:'resolved',resolvedAt:now(),resolvedMs:Date.now()};if(save(candidate)){notices=candidate;renderActive();renderDashboard();renderHistory();toast('Aviso marcado como normalizado.')}else{toast('NO SE ACTUALIZÓ: '+storageProblem);showStorageWarning()}}}const det=e.target.closest('[data-detail]');if(det){const n=notices.find(x=>x.id===det.dataset.detail);if(n)alert(`${lineLabel(n.line)}\n${typeNames[n.type]} · ${severityNames[n.severity]}\n${n.title}\n\n${n.detail}\n\nLugar: ${n.location}\nSentido: ${n.direction}\nPublicado: ${n.createdAt}\nVigencia: ${n.duration}`)}});
-$('noticeForm').addEventListener('submit',e=>{
+document.addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]');if(edit){const n=notices.find(x=>x.id===edit.dataset.edit);if(n){editingId=n.id;$('line').value=routeStops[n.line]?n.line:'__other';$('otherLineWrap').classList.toggle('hidden',$('line').value!=='__other');$('otherLine').required=$('line').value==='__other';$('otherLine').value=routeStops[n.line]?'':n.line;$('direction').value=n.direction;$('scope').value=n.scope;$('type').value=n.type;refreshLocationOptions(n.location);$('delay').value=n.delay||'';$('duration').value=n.duration;$('title').value=n.title;$('detail').value=n.detail;$('notify').checked=!!n.notify;$('showDelay').checked=!!(n.delay);severity=n.severity;document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.severity===severity));$('noticeForm').querySelector('button[type=submit]').textContent='Guardar actualización';updatePreview();go('new')}}const close=e.target.closest('[data-resolve]');if(close){const index=notices.findIndex(x=>x.id===close.dataset.resolve);if(index>=0){try{const rows=await supabaseRequest(SUPABASE_TABLE+'?id=eq.'+encodeURIComponent(close.dataset.resolve),{method:'PATCH',headers:{'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({estado:'normalizado',actualizado_en:new Date().toISOString()})});if(!Array.isArray(rows)||!rows.length)throw new Error('Supabase no confirmó el cambio de estado.');notices[index]=mapSupabaseNotice(rows[0]);try{window.localStorage.setItem(KEY,JSON.stringify(notices))}catch(_){}renderActive();renderDashboard();renderHistory();toast('Aviso normalizado y actualizado en Supabase.')}catch(err){toast('NO SE ACTUALIZÓ: '+(err.message||err));setSupabaseStatus('● Error al actualizar: '+(err.message||err),'error')}}}const det=e.target.closest('[data-detail]');if(det){const n=notices.find(x=>x.id===det.dataset.detail);if(n)alert(`${lineLabel(n.line)}\n${typeNames[n.type]} · ${severityNames[n.severity]}\n${n.title}\n\n${n.detail}\n\nLugar: ${n.location}\nSentido: ${n.direction}\nPublicado: ${n.createdAt}\nVigencia: ${n.duration}`)}});
+$('noticeForm').addEventListener('submit',async e=>{
  e.preventDefault();
  if(submitting)return;
  submitting=true;
  const submitButton=$('noticeForm').querySelector('button[type="submit"]');
  const originalButtonText=submitButton.textContent;
- submitButton.disabled=true;submitButton.textContent='Publicando…';
+ submitButton.disabled=true;submitButton.textContent='Enviando a Supabase…';
  try{
   clearFieldErrors();$('publishResult').classList.add('hidden');
   const problems=[];let firstInvalid=null;
@@ -281,7 +335,7 @@ $('noticeForm').addEventListener('submit',e=>{
   const lineIsManual=lineValue==='__other';
   const selectedLine=lineIsManual?$('otherLine').value.trim():lineValue;
   const locationSelect=$('location').value;
-  const locationIsManual=lineIsManual||locationSelect==='__other';
+  const locationIsManual=locationSelect==='__other';
   const selectedPlace=locationIsManual?$('otherLocation').value.trim():locationSelect.trim();
   const title=$('title').value.trim(),detail=$('detail').value.trim(),delay=$('delay').value.trim();
   if(!selectedLine)mark(lineIsManual?'otherLine':'line','Te falta elegir el colectivo o escribir el número de línea.');
@@ -298,33 +352,38 @@ $('noticeForm').addEventListener('submit',e=>{
   const duration=$('duration').value;
   const durationMs=duration==='30 minutos'?30*60000:duration==='1 hora'?60*60000:duration==='2 horas'?120*60000:duration==='Todo el día'?24*60*60000:null;
   const values={line:selectedLine,type:$('type').value,severity,title,detail,location:selectedPlace,direction:$('direction').value,scope:$('scope').value,delay:$('showDelay').checked?delay:'',duration,expiresMs:durationMs?Date.now()+durationMs:null,notify:$('notify').checked};
-  const isEdit=!!editingId;let item;const candidate=notices.slice();
-  if(isEdit){
-   const index=candidate.findIndex(x=>x.id===editingId);
-   if(index<0)throw new Error('No encontramos el aviso que estabas editando. Volvé a cargarlo desde Avisos activos.');
-   item={...candidate[index],...values,updatedAt:now(),updatedMs:Date.now(),status:'active'};candidate[index]=item;
+  const payload=supabaseNoticePayload(values,'activo');
+  let item;
+  if(editingId){
+   const rows=await supabaseRequest(SUPABASE_TABLE+'?id=eq.'+encodeURIComponent(editingId),{method:'PATCH',headers:{'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(payload)});
+   if(!Array.isArray(rows)||!rows.length)throw new Error('Supabase no encontró el aviso para actualizarlo. Recargá la lista y volvé a intentar.');
+   item=mapSupabaseNotice(rows[0]);
   }else{
-   item={...values,id:'cb-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),status:'active',createdAt:now(),createdMs:Date.now()};candidate.unshift(item);
+   const rows=await supabaseRequest(SUPABASE_TABLE,{method:'POST',headers:{'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(payload)});
+   if(!Array.isArray(rows)||!rows.length)throw new Error('Supabase no confirmó la publicación. No se agregó el aviso a las listas.');
+   item=mapSupabaseNotice(rows[0]);
   }
-  // El registro de esta sesión se confirma primero. El almacenamiento persistente es secundario.
-  notices=candidate;
-  const saved=save(candidate);
+  notices=[item,...notices.filter(n=>n.id!==item.id)];
+  supabaseOnline=true;
+  try{window.localStorage.setItem(KEY,JSON.stringify(notices));}catch(_){}
   renderDashboard();renderActive();renderHistory();
   editingId=null;
-  $('publishResultTitle').textContent=isEdit?'✅ Aviso actualizado': '✅ Aviso publicado correctamente';
-  $('publishResultText').textContent=`${lineLabel(item.line)} · ${item.location}. El aviso aparece en Últimos avisos publicados, Avisos activos y el Historial de esta sesión.`+(saved?' También quedó guardado en este navegador.':' ATENCIÓN: no quedó guardado permanentemente: '+(dataProblem||storageProblem));
+  $('publishResultTitle').textContent='✅ Aviso publicado en la base compartida';
+  $('publishResultText').textContent=lineLabel(item.line)+' · '+item.location+'. Supabase confirmó el guardado; ya figura en Últimos avisos, Avisos activos e Historial y estará disponible para ConectaBus.';
   $('publishResult').classList.remove('hidden');
-  $('publishResult').dataset.saved=saved?'yes':'session';
+  $('publishResult').dataset.saved='yes';
   $('noticeForm').reset();$('line').value='';$('type').value='';$('otherLineWrap').classList.add('hidden');$('otherLine').required=false;refreshLocationOptions();submitButton.textContent='📣 Publicar aviso';severity='medium';document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.severity==='medium'));clearFieldErrors();updatePreview();
-  formMessage(saved?'✅ Publicado. El aviso quedó guardado y ya figura en las tres secciones.':'⚠️ Publicado en esta sesión. No quedó guardado permanentemente; exportá los datos antes de cerrar la pestaña.','success');
+  formMessage('✅ Supabase confirmó la publicación. El aviso quedó guardado y sincronizado.','success');
+  setSupabaseStatus('● Conectada a Supabase · aviso '+item.id+' guardado','ok');
   go('dashboard');$('publishResult').scrollIntoView({behavior:'smooth',block:'center'});
  }catch(err){
   const reason=err&&err.message?err.message:String(err);
   formMessage('⛔ NO SE PUBLICÓ. Motivo: '+reason+'\nNo se borró lo que completaste. Corregí el problema y volvé a intentar.','error');
   $('publishResult').classList.add('hidden');
+  setSupabaseStatus('● Publicación fallida: '+reason,'error');
  }finally{
   submitting=false;submitButton.disabled=false;
-  if(submitButton.textContent==='Publicando…'||submitButton.textContent==='Guardar actualización')submitButton.textContent=originalButtonText;
+  if(submitButton.textContent==='Enviando a Supabase…'||submitButton.textContent==='Guardar actualización')submitButton.textContent=originalButtonText;
  }
 });
 $('resetForm').addEventListener('click',()=>setTimeout(()=>{editingId=null;$('noticeForm').querySelector('button[type=submit]').textContent='📣 Publicar aviso';clearFieldErrors();formMessage('Completá los datos y tocá «Publicar aviso». Si falta algo, te vamos a indicar qué campo corregir.','info');severity='medium';document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.severity==='medium'));$('line').value='';$('type').value='';$('otherLineWrap').classList.add('hidden');$('otherLine').required=false;refreshLocationOptions();updatePreview()},0));
@@ -340,7 +399,7 @@ function applyTheme(theme,persist=true){
 let initialTheme='dark';try{const savedTheme=window.localStorage.getItem('central_conectabus_theme_v1');if(savedTheme==='light'||savedTheme==='dark')initialTheme=savedTheme;}catch(e){}
 applyTheme(initialTheme,false);
 $('themeSelect').addEventListener('change',e=>applyTheme(e.target.value,true));
-refreshLocationOptions();$('otherLine').required=false;checkStorage();showStorageWarning();formMessage(dataProblem?'⚠️ '+dataProblem:persistenceMode==='memory'?'⚠️ Modo temporal: podés publicar, pero los avisos pueden perderse al cerrar o recargar.':'Completá los datos y tocá «Publicar aviso». Si falta algo, te vamos a indicar qué campo corregir.',dataProblem||persistenceMode==='memory'?'error':'info');updatePreview();renderDashboard();
+refreshLocationOptions();$('otherLine').required=false;checkStorage();showStorageWarning();formMessage('Completá los datos y tocá «Publicar aviso». El aviso se guardará en la base compartida y, si falla, mostraremos el motivo.','info');updatePreview();renderDashboard();refreshRemoteNotices(true);setInterval(()=>refreshRemoteNotices(false),15000);
 window.addEventListener('error',event=>{const reason=event.message||'Error inesperado del programa';formMessage('⛔ NO SE COMPLETÓ LA OPERACIÓN: '+reason+'. No se confirmó la publicación. Revisá los datos y volvé a intentar.','error');});
 window.addEventListener('unhandledrejection',event=>{const reason=event.reason&&event.reason.message?event.reason.message:String(event.reason||'Error inesperado');formMessage('⛔ NO SE COMPLETÓ LA OPERACIÓN: '+reason+'. No se confirmó la publicación.','error');});
 })();
