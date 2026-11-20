@@ -2,7 +2,15 @@
 <html lang="es" data-theme="dark">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#15243d"><title>Central ConectaBus · v2.1</title>
+<meta name="theme-color" content="#15243d">
+<meta name="description" content="Central de operaciones de ConectaBus para publicar y administrar avisos por línea de colectivo.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Central ConectaBus">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>Central ConectaBus · v2.2</title>
 <style>
 :root{--navy:#15243d;--navy2:#1d3151;--blue:#315fce;--cyan:#22b5bb;--bg:#f3f6fb;--card:#fff;--ink:#172338;--muted:#6b7890;--line:#e4eaf3;--green:#16875d;--greenbg:#e8f7f0;--amber:#bd790b;--amberbg:#fff4dc;--red:#c43c4b;--redbg:#fff0f1;--violet:#6754bd;--violetbg:#f0edff;--shadow:0 12px 32px rgba(23,39,67,.08)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh}.topbar{height:70px;background:linear-gradient(110deg,var(--navy),#203d64);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 26px;box-shadow:0 5px 18px #11213a24;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#2dd0c6,#3474df);display:grid;place-items:center;font-size:22px;box-shadow:0 7px 15px #0002}.brand small{display:block;font-size:11px;color:#b9c9e4;font-weight:600;letter-spacing:1.6px;text-transform:uppercase}.topright{display:flex;align-items:center;gap:12px}.mode{font-size:12px;color:#d8e5ff;border:1px solid #ffffff35;padding:7px 11px;border-radius:30px}.operator{display:flex;align-items:center;gap:8px;font-size:13px;color:#eaf1ff}.avatar{width:30px;height:30px;border-radius:50%;background:#ffffff24;display:grid;place-items:center;font-weight:800}
@@ -126,6 +134,7 @@ html[data-theme="dark"] .toast{background:#243653;color:#f4f7fc}
 @media(max-width:620px){.appearance-card{grid-template-columns:1fr}.appearance-copy{align-items:flex-start}}
 
 .sync-status{margin:0 0 14px;padding:10px 13px;border-radius:12px;font-size:.86rem;font-weight:650;border:1px solid var(--line,#dbe3ee);background:var(--card,#fff);color:var(--muted,#5c6b80)}.sync-status.ok{color:#16845b;background:rgba(22,132,91,.09);border-color:rgba(22,132,91,.25)}.sync-status.error{color:#c43b42;background:rgba(196,59,66,.09);border-color:rgba(196,59,66,.25)}.sync-status.info{color:var(--muted,#5c6b80)}
+.pwa-install-card{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-top:16px;padding:22px}.pwa-install-copy{display:flex;align-items:flex-start;gap:15px;min-width:0}.pwa-install-icon{width:48px;height:48px;flex:0 0 48px;border-radius:15px;background:linear-gradient(145deg,#22b8bd,#3268cb);display:grid;place-items:center;color:#fff;font-size:25px;box-shadow:0 8px 18px rgba(31,91,158,.22)}.pwa-install-copy h2{font-size:17px;margin:0 0 5px;color:var(--ink)}.pwa-install-copy p{font-size:13px;color:var(--muted);margin:0;max-width:620px}.pwa-install-actions{min-width:220px;display:flex;flex-direction:column;gap:7px;align-items:stretch}.pwa-install-actions .btn{white-space:nowrap}.pwa-install-status{font-size:12px;line-height:1.4;color:var(--muted);margin:0}@media(max-width:680px){.pwa-install-card{display:block}.pwa-install-actions{margin-top:16px;min-width:0}.pwa-install-copy{gap:11px}.pwa-install-icon{width:42px;height:42px;flex-basis:42px}}
 </style>
 </head>
 <body>
@@ -162,7 +171,11 @@ html[data-theme="dark"] .toast{background:#243653;color:#f4f7fc}
 </section>
 <section id="page-active" class="page hidden"><div class="pagehead"><div><div class="eyebrow">Seguimiento</div><h1>Avisos activos</h1><p>Actualizá o cerrá las novedades cuando el servicio vuelva a la normalidad.</p></div><button class="btn primary" data-go="new">＋ Nuevo aviso</button></div><div class="card"><div class="filters"><input id="filterSearch" placeholder="Buscar por línea, calle o título"><select id="filterType"><option value="">Todos los tipos</option><option value="demora">Demoras</option><option value="desvio">Desvíos</option><option value="corte">Cortes</option><option value="normalizado">Normalizados</option></select></div><div id="activeList" class="notice-list"></div></div></section>
 <section id="page-history" class="page hidden"><div class="pagehead"><div><div class="eyebrow">Registro</div><h1>Historial de avisos</h1><p>Consultá las novedades publicadas y cuándo fueron cerradas.</p></div><button class="btn outline" id="exportBtn">⬇ Exportar historial</button></div><div class="card"><div id="historyTable" class="table-wrap"></div></div></section>
-<section id="page-help" class="page hidden"><div class="pagehead"><div><div class="eyebrow">Preferencias</div><h1>Configuración</h1><p>Personalizá la apariencia y administrá las herramientas de la Central.</p></div></div><div class="card appearance-card"><div class="appearance-copy"><div class="appearance-icon">◐</div><div><h2>Modo de visualización</h2><p>Elegí el aspecto que te resulte más cómodo. El cambio se aplica en el momento.</p></div></div><div class="appearance-control"><label for="themeSelect" class="appearance-label">Apariencia</label><select id="themeSelect" class="theme-select"><option value="dark">Oscuro (recomendado)</option><option value="light">Claro</option></select><p id="themeStatus" class="theme-status" aria-live="polite">El modo oscuro está activado.</p></div></div><div class="grid two" style="margin-top:16px"><div class="card"><h2 style="font-size:16px;margin:0 0 12px">Tipos de avisos disponibles</h2><div class="side-kpis"><div class="line-row"><span>Demoras de unidades</span><span class="tag high">Horario</span></div><div class="line-row"><span>Desvíos, cortes y accidentes</span><span class="tag critical">Recorrido</span></div><div class="line-row"><span>Paradas suspendidas o trasladadas</span><span class="tag">Paradas</span></div><div class="line-row"><span>Frecuencia reducida o refuerzos</span><span class="tag">Frecuencia</span></div><div class="line-row"><span>Interrupciones y unidades fuera de servicio</span><span class="tag critical">Servicio</span></div><div class="line-row"><span>Alta ocupación</span><span class="tag">Pasajeros</span></div><div class="line-row"><span>Servicio normalizado</span><span class="tag low">Cierre</span></div></div></div><div class="card"><h2 style="font-size:16px;margin:0 0 12px">Cómo funciona el envío</h2><p style="color:var(--muted);font-size:13px">Esta primera versión funciona en modo local para probar el diseño, los campos y el flujo de publicación. Los avisos quedan guardados en este navegador y pueden exportarse.</p><div class="warning"><b>Conexión compartida pendiente.</b> Para que un aviso enviado desde la Central aparezca en los celulares de todos los usuarios de ConectaBus, ambas aplicaciones deberán conectarse a una base de datos en la nube. Todavía no se están enviando avisos reales a otros dispositivos.</div><p style="font-size:12px;color:var(--muted);margin:12px 0 0">La próxima etapa será conectar las dos apps a un servicio compartido, con acceso protegido para la central y lectura de avisos para los pasajeros.</p><button class="btn outline" style="margin-top:14px" id="exportJson">⬇ Descargar datos de prueba</button></div></div><div class="card" style="margin-top:16px"><h2 style="font-size:16px;margin:0 0 8px">Buenas prácticas</h2><p style="font-size:13px;color:var(--muted);margin:0">Publicá solo información confirmada. Indicá siempre la calle, el sentido y la vigencia. No incluyas datos personales de choferes o pasajeros. Para emergencias, usá los canales oficiales: esta herramienta informa a los usuarios, no reemplaza a los servicios de emergencia.</p></div></section>
+<section id="page-help" class="page hidden"><div class="pagehead"><div><div class="eyebrow">Preferencias</div><h1>Configuración</h1><p>Personalizá la apariencia y administrá las herramientas de la Central.</p></div></div><div class="card appearance-card"><div class="appearance-copy"><div class="appearance-icon">◐</div><div><h2>Modo de visualización</h2><p>Elegí el aspecto que te resulte más cómodo. El cambio se aplica en el momento.</p></div></div><div class="appearance-control"><label for="themeSelect" class="appearance-label">Apariencia</label><select id="themeSelect" class="theme-select"><option value="dark">Oscuro (recomendado)</option><option value="light">Claro</option></select><p id="themeStatus" class="theme-status" aria-live="polite">El modo oscuro está activado.</p></div></div><div class="card pwa-install-card">
+ <div class="pwa-install-copy"><div class="pwa-install-icon">▣</div><div><h2>Instalar Central ConectaBus</h2><p>Agregá la Central a tu computadora o celular. Se abrirá en una ventana propia, como una aplicación, con su ícono y acceso directo.</p></div></div>
+ <div class="pwa-install-actions"><button class="btn primary" id="pwaInstallButton" type="button">⬇ Instalar Central</button><p class="pwa-install-status" id="pwaInstallStatus" role="status" aria-live="polite">Comprobando opciones de instalación…</p></div>
+</div>
+<div class="grid two" style="margin-top:16px"><div class="card"><h2 style="font-size:16px;margin:0 0 12px">Tipos de avisos disponibles</h2><div class="side-kpis"><div class="line-row"><span>Demoras de unidades</span><span class="tag high">Horario</span></div><div class="line-row"><span>Desvíos, cortes y accidentes</span><span class="tag critical">Recorrido</span></div><div class="line-row"><span>Paradas suspendidas o trasladadas</span><span class="tag">Paradas</span></div><div class="line-row"><span>Frecuencia reducida o refuerzos</span><span class="tag">Frecuencia</span></div><div class="line-row"><span>Interrupciones y unidades fuera de servicio</span><span class="tag critical">Servicio</span></div><div class="line-row"><span>Alta ocupación</span><span class="tag">Pasajeros</span></div><div class="line-row"><span>Servicio normalizado</span><span class="tag low">Cierre</span></div></div></div><div class="card"><h2 style="font-size:16px;margin:0 0 12px">Cómo funciona el envío</h2><p style="color:var(--muted);font-size:13px">Los avisos se guardan en Supabase y se comparten con ConectaBus según la línea seleccionada. La aplicación de pasajeros consulta novedades automáticamente cada 15 segundos.</p><div class="warning"><b>Entorno de demostración.</b> La sincronización entre ambas aplicaciones está habilitada para pruebas. Los avisos son informativos y no representan reportes oficiales de las empresas de transporte.</div><p style="font-size:12px;color:var(--muted);margin:12px 0 0">Para publicar y sincronizar avisos se necesita conexión a internet. La instalación permite abrir la Central como una aplicación independiente.</p><button class="btn outline" style="margin-top:14px" id="exportJson">⬇ Descargar datos de prueba</button></div></div><div class="card" style="margin-top:16px"><h2 style="font-size:16px;margin:0 0 8px">Buenas prácticas</h2><p style="font-size:13px;color:var(--muted);margin:0">Publicá solo información confirmada. Indicá siempre la calle, el sentido y la vigencia. No incluyas datos personales de choferes o pasajeros. Para emergencias, usá los canales oficiales: esta herramienta informa a los usuarios, no reemplaza a los servicios de emergencia.</p></div></section>
 <div class="foot">CENTRAL CONECTABUS · Prototipo de trabajo · No conectado aún al servicio público</div>
 </main></div>
 <nav class="mobile-nav" id="mobileNav"><button class="active" data-page="dashboard"><span>▦</span>Inicio</button><button data-page="new"><span>＋</span>Publicar</button><button data-page="active"><span>◉</span>Activos</button><button data-page="history"><span>◷</span>Historial</button><button data-page="help"><span>⚙</span>Config.</button></nav>
@@ -399,6 +412,56 @@ function applyTheme(theme,persist=true){
 let initialTheme='dark';try{const savedTheme=window.localStorage.getItem('central_conectabus_theme_v1');if(savedTheme==='light'||savedTheme==='dark')initialTheme=savedTheme;}catch(e){}
 applyTheme(initialTheme,false);
 $('themeSelect').addEventListener('change',e=>applyTheme(e.target.value,true));
+
+/* Instalación de Central ConectaBus como PWA. */
+let centralInstallPrompt=null;
+const centralInstallButton=$('pwaInstallButton');
+const centralInstallStatus=$('pwaInstallStatus');
+function centralIsInstalled(){
+ return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
+}
+function centralShowInstalled(){
+ if(centralInstallButton){centralInstallButton.disabled=true;centralInstallButton.textContent='✓ Central instalada';}
+ if(centralInstallStatus)centralInstallStatus.textContent='La Central ya está instalada en este dispositivo.';
+}
+if(centralIsInstalled())centralShowInstalled();
+window.addEventListener('beforeinstallprompt',event=>{
+ event.preventDefault();
+ centralInstallPrompt=event;
+ if(!centralIsInstalled()&&centralInstallButton){
+  centralInstallButton.disabled=false;
+  centralInstallButton.textContent='⬇ Instalar Central';
+  centralInstallStatus.textContent='Tu navegador permite instalar Central ConectaBus.';
+ }
+});
+if(centralInstallButton)centralInstallButton.addEventListener('click',async()=>{
+ if(centralIsInstalled()){centralShowInstalled();return;}
+ if(centralInstallPrompt){
+  const promptEvent=centralInstallPrompt;centralInstallPrompt=null;
+  try{
+   await promptEvent.prompt();
+   const choice=await promptEvent.userChoice;
+   if(choice&&choice.outcome==='accepted'){
+    centralInstallStatus.textContent='La instalación fue aceptada. Central ConectaBus aparecerá entre tus aplicaciones.';
+   }else{
+    centralInstallStatus.textContent='No se instaló todavía. Podés intentarlo más tarde desde este botón o el menú del navegador.';
+   }
+  }catch(err){
+   centralInstallStatus.textContent='No se pudo abrir el cuadro de instalación. Usá el menú del navegador para instalar la página como aplicación.';
+  }
+ }else{
+  centralInstallStatus.textContent='Para instalarla: en Chrome o Edge abrí el menú ⋮ y elegí «Instalar página como aplicación». En Android, menú ⋮ → «Instalar aplicación» o «Agregar a pantalla principal». En iPhone, abrí este sitio en Safari → Compartir → «Añadir a pantalla de inicio».';
+ }
+});
+window.addEventListener('appinstalled',centralShowInstalled);
+if('serviceWorker' in navigator&&location.protocol==='https:'){
+ navigator.serviceWorker.register('./sw.js',{scope:'./'})
+  .then(()=>{if(centralInstallStatus&&!centralIsInstalled()&&!centralInstallPrompt)centralInstallStatus.textContent='Central lista para instalar desde el menú del navegador o el botón si está disponible.';})
+  .catch(err=>{if(centralInstallStatus)centralInstallStatus.textContent='La instalación puede seguir disponible, pero no se pudo activar el modo sin conexión: '+(err&&err.message||err);});
+}else if(centralInstallStatus){
+ centralInstallStatus.textContent='Abrí la Central desde su dirección HTTPS para poder instalarla.';
+}
+
 refreshLocationOptions();$('otherLine').required=false;checkStorage();showStorageWarning();formMessage('Completá los datos y tocá «Publicar aviso». El aviso se guardará en la base compartida y, si falla, mostraremos el motivo.','info');updatePreview();renderDashboard();refreshRemoteNotices(true);setInterval(()=>refreshRemoteNotices(false),15000);
 window.addEventListener('error',event=>{const reason=event.message||'Error inesperado del programa';formMessage('⛔ NO SE COMPLETÓ LA OPERACIÓN: '+reason+'. No se confirmó la publicación. Revisá los datos y volvé a intentar.','error');});
 window.addEventListener('unhandledrejection',event=>{const reason=event.reason&&event.reason.message?event.reason.message:String(event.reason||'Error inesperado');formMessage('⛔ NO SE COMPLETÓ LA OPERACIÓN: '+reason+'. No se confirmó la publicación.','error');});
