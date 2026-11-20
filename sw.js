@@ -6,11 +6,8 @@ const INDEX_URL = new URL("index.html", APP_BASE).href;
 const CORE_FILES = [
   INDEX_URL,
   new URL("manifest.webmanifest", APP_BASE).href,
-  new URL("icon.svg", APP_BASE).href,
-  new URL("icon-192.png", APP_BASE).href,
-  new URL("icon-512.png", APP_BASE).href
+  new URL("icon.svg", APP_BASE).href
 ];
-
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -18,7 +15,6 @@ self.addEventListener("install", event => {
       .then(() => self.skipWaiting())
   );
 });
-
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
@@ -29,7 +25,6 @@ self.addEventListener("activate", event => {
       .then(() => self.clients.claim())
   );
 });
-
 self.addEventListener("fetch", event => {
   const request = event.request;
   if (request.method !== "GET") return;
