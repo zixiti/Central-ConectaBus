@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#15243d"><title>Central ConectaBus · v2.1</title>
+<style>
+:root{--navy:#15243d;--navy2:#1d3151;--blue:#315fce;--cyan:#22b5bb;--bg:#f3f6fb;--card:#fff;--ink:#172338;--muted:#6b7890;--line:#e4eaf3;--green:#16875d;--greenbg:#e8f7f0;--amber:#bd790b;--amberbg:#fff4dc;--red:#c43c4b;--redbg:#fff0f1;--violet:#6754bd;--violetbg:#f0edff;--shadow:0 12px 32px rgba(23,39,67,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh}.topbar{height:70px;background:linear-gradient(110deg,var(--navy),#203d64);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 26px;box-shadow:0 5px 18px #11213a24;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#2dd0c6,#3474df);display:grid;place-items:center;font-size:22px;box-shadow:0 7px 15px #0002}.brand small{display:block;font-size:11px;color:#b9c9e4;font-weight:600;letter-spacing:1.6px;text-transform:uppercase}.topright{display:flex;align-items:center;gap:12px}.mode{font-size:12px;color:#d8e5ff;border:1px solid #ffffff35;padding:7px 11px;border-radius:30px}.operator{display:flex;align-items:center;gap:8px;font-size:13px;color:#eaf1ff}.avatar{width:30px;height:30px;border-radius:50%;background:#ffffff24;display:grid;place-items:center;font-weight:800}
+.shell{display:grid;grid-template-columns:244px minmax(0,1fr);max-width:1500px;margin:auto;min-height:calc(100vh - 70px)}.side{background:#fff;border-right:1px solid var(--line);padding:22px 14px}.side-label{font-size:10px;font-weight:800;color:#9aa6b8;letter-spacing:1.3px;text-transform:uppercase;padding:8px 12px 10px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#536078;text-align:left;border-radius:11px;padding:12px 13px;display:flex;align-items:center;gap:12px;font-weight:650}.nav button span{width:22px;text-align:center;font-size:17px}.nav button.active{background:#edf2ff;color:var(--blue)}.nav button:hover{background:#f2f5fa}.side-note{margin:25px 5px 0;padding:13px;border-radius:13px;background:#f3f7fd;color:#64728a;font-size:12px}.side-note b{display:block;color:#34445f;margin-bottom:4px}.main{padding:28px;min-width:0}.pagehead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:800}.pagehead h1{margin:5px 0 4px;font-size:28px;line-height:1.15;letter-spacing:-.7px}.pagehead p{margin:0;color:var(--muted);max-width:680px}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--blue);color:#fff;box-shadow:0 6px 14px #315fce2a}.primary:hover{background:#244fb6}.ghost{background:#eef2f8;color:#465773}.outline{background:#fff;border:1px solid var(--line);color:#43516b}.danger{background:var(--redbg);color:var(--red)}.success{background:var(--greenbg);color:var(--green)}.small{padding:7px 10px;border-radius:9px;font-size:12px}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:18px;box-shadow:var(--shadow)}.stat{display:flex;align-items:center;justify-content:space-between;min-height:112px}.stat-label{font-size:12px;color:var(--muted);font-weight:700}.stat-num{font-size:30px;font-weight:850;letter-spacing:-1px;margin-top:4px}.stat-note{font-size:11px;color:#93a0b2;margin-top:2px}.stat-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:#edf2ff;color:var(--blue);font-size:20px}.stat:nth-child(2) .stat-icon{background:var(--amberbg);color:var(--amber)}.stat:nth-child(3) .stat-icon{background:var(--redbg);color:var(--red)}.stat:nth-child(4) .stat-icon{background:var(--greenbg);color:var(--green)}.two{grid-template-columns:minmax(0,1.5fr) minmax(280px,.8fr)}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px}.section-title h2{font-size:16px;margin:0}.section-title p{font-size:12px;color:var(--muted);margin:3px 0 0}.line-pill{font-size:11px;font-weight:800;background:#edf2ff;color:#315fce;padding:6px 9px;border-radius:20px}.empty{border:1px dashed #d4deeb;background:#fafcff;border-radius:13px;text-align:center;padding:28px 16px;color:#738097}.empty .big{font-size:27px;margin-bottom:5px}.empty b{display:block;color:#41516b}.notice-list{display:grid;gap:10px}.notice{display:grid;grid-template-columns:5px minmax(0,1fr);gap:12px;border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff}.stripe{border-radius:8px;background:var(--blue)}.stripe.high{background:#d58b17}.stripe.critical{background:#c43c4b}.stripe.low{background:#15956c}.notice-head{display:flex;align-items:center;flex-wrap:wrap;gap:7px}.tag{font-size:10px;letter-spacing:.4px;font-weight:850;padding:4px 7px;border-radius:6px;background:#edf2ff;color:#3658a5}.tag.high{background:var(--amberbg);color:var(--amber)}.tag.critical{background:var(--redbg);color:var(--red)}.tag.low{background:var(--greenbg);color:var(--green)}.notice h3{font-size:14px;margin:7px 0 3px}.notice p{font-size:12px;color:#67758c;margin:0}.notice-meta{display:flex;flex-wrap:wrap;gap:12px;color:#8490a3;font-size:11px;margin-top:9px}.notice-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.side-kpis{display:grid;gap:10px}.line-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}.line-row:last-child{border:0}.line-name{font-weight:750;font-size:13px}.line-desc{font-size:11px;color:var(--muted)}.badge-status{font-size:10px;padding:4px 7px;border-radius:20px;font-weight:800;background:var(--greenbg);color:var(--green)}.badge-status.off{background:#f0f2f5;color:#68768c}
+.form-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:16px;align-items:start}.form-card{display:grid;gap:15px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:800;color:#40506a}.field small{font-size:11px;color:#8490a3}.field input,.field select,.field textarea{width:100%;border:1px solid #dbe3ef;border-radius:10px;background:#fff;padding:11px 12px;color:#24324a;outline:none}.field textarea{min-height:92px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#7799ef;box-shadow:0 0 0 3px #315fce16}.choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.choice{border:1px solid var(--line);background:#fff;color:#51617a;border-radius:10px;padding:10px;text-align:left;font-size:12px;font-weight:750}.choice strong{display:block;font-size:16px;margin-bottom:2px}.choice.selected{border-color:#6d8ce0;background:#f1f4ff;color:#315fce}.radio-line{display:flex;flex-wrap:wrap;gap:8px}.radio{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:12px;color:#59677c;display:flex;align-items:center;gap:7px}.radio input{accent-color:var(--blue)}.form-actions{display:flex;justify-content:flex-end;gap:9px;padding-top:4px}.preview{position:sticky;top:92px}.preview-box{background:#f8faff;border:1px solid var(--line);border-radius:13px;padding:14px}.preview-box h3{font-size:14px;margin:0 0 10px}.preview-title{font-weight:800;font-size:14px;margin:9px 0 4px}.preview-text{font-size:12px;color:#62718a}.preview-line{display:inline-block;background:#eaf0ff;color:#3559a9;font-size:10px;font-weight:850;padding:4px 7px;border-radius:6px}.warning{background:var(--amberbg);color:#80540d;border:1px solid #f0dcae;border-radius:12px;padding:12px;font-size:12px;margin-top:12px}.notice-status{font-size:11px;font-weight:800;color:var(--green)}.table-wrap{overflow:auto}.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}.filters input,.filters select{border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px 11px;color:#495871}.table{width:100%;border-collapse:collapse;min-width:680px}.table th{text-align:left;color:#8995a7;font-size:10px;text-transform:uppercase;letter-spacing:.7px;padding:10px;border-bottom:1px solid var(--line)}.table td{font-size:12px;padding:12px 10px;border-bottom:1px solid #edf1f6;vertical-align:middle}.table tr:last-child td{border:0}.table strong{font-size:12px}.hidden{display:none!important}.toast{position:fixed;bottom:22px;right:22px;background:#172943;color:#fff;padding:13px 17px;border-radius:12px;box-shadow:0 10px 30px #0003;z-index:30;font-size:13px;max-width:min(90vw,390px)}.foot{margin-top:20px;color:#98a3b3;font-size:11px;text-align:center}.mobile-nav{display:none}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.form-layout{grid-template-columns:minmax(0,1fr) 270px}.two{grid-template-columns:1fr}}
+@media(max-width:760px){.topbar{height:62px;padding:0 14px}.mode{display:none}.shell{display:block;min-height:calc(100vh - 62px)}.side{display:none}.main{padding:18px 13px 82px}.pagehead h1{font-size:23px}.pagehead{margin-bottom:17px}.operator span:last-child{display:none}.stats{gap:9px}.card{padding:14px;border-radius:14px}.stat{min-height:96px}.stat-num{font-size:25px}.stat-icon{width:36px;height:36px}.form-layout{grid-template-columns:1fr}.preview{position:static}.form-grid{grid-template-columns:1fr 1fr}.choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:7px 4px calc(7px + env(safe-area-inset-bottom));z-index:20}.mobile-nav button{border:0;background:transparent;color:#738098;font-size:10px;font-weight:750;display:grid;justify-items:center;gap:2px}.mobile-nav button span{font-size:18px}.mobile-nav button.active{color:var(--blue)}.foot{padding-bottom:5px}}
+@media(max-width:430px){.form-grid{grid-template-columns:1fr}.pagehead .btn{padding:9px 10px;font-size:12px}.stats{grid-template-columns:1fr 1fr}.stat-label{font-size:11px}}
+
+.howto{display:flex;gap:13px;align-items:flex-start;margin-bottom:16px;background:#f8faff;border-color:#dbe5f5}.howto-icon{width:36px;height:36px;flex:0 0 36px;border-radius:11px;background:#eaf0ff;color:var(--blue);display:grid;place-items:center;font-size:18px}.howto strong{display:block;margin-bottom:4px}.howto ol{margin:5px 0 0;padding-left:19px;color:#5d6c83;font-size:12px}.howto li{margin:3px 0}.form-feedback{border-radius:11px;padding:12px 14px;font-size:13px;font-weight:650}.form-feedback.error{background:var(--redbg);border:1px solid #f0cbd0;color:#a82e3d}.form-feedback.info{background:#edf4ff;border:1px solid #d6e4ff;color:#31528e}.form-feedback.success{background:#e8f7f0;border:1px solid #bfe5d3;color:#176b4b}.form-feedback{white-space:pre-line}.storage-warning{margin:0 0 18px;padding:15px 17px;border-radius:13px;background:#fff0f1;border:2px solid #d54c5a;color:#962b38;font-size:13px;line-height:1.5}.storage-warning strong{display:block;font-size:15px;margin-bottom:4px}.storage-warning code{font-size:12px;background:#ffffffa8;border-radius:5px;padding:1px 4px}.storage-warning ul{margin:7px 0 0;padding-left:19px}.storage-warning li{margin:3px 0}.publish-result{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:17px;padding:15px 17px;border:1px solid #bfe5d3;background:#effaf4;border-radius:14px;color:#176b4b}.publish-result b{display:block;font-size:15px}.publish-result p{margin:3px 0 0;font-size:12px;color:#39775e}.publish-result .result-actions{display:flex;gap:7px;flex-wrap:wrap}.required-note{font-size:11px;color:#8b5f12;background:#fff7e6;border-radius:8px;padding:8px 10px}.form-actions .primary{min-width:190px}.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:#d54c5a;box-shadow:0 0 0 3px #d54c5a18}
+@media(max-width:760px){.publish-result{align-items:flex-start}.publish-result .result-actions{width:100%}.publish-result .result-actions .btn{flex:1}}
+
+/* Apariencia refinada: oscuro predeterminado y claro opcional */
+:root{color-scheme:light;--radius-soft:18px}
+html[data-theme="dark"]{color-scheme:dark;--bg:#0b1220;--card:#141e2f;--ink:#e8eef8;--muted:#9aaac0;--line:#29384e;--navy:#0b1424;--navy2:#172943;--blue:#7295ff;--cyan:#54d1c7;--green:#5bc69a;--greenbg:#183b35;--amber:#edbd68;--amberbg:#3a2e1e;--red:#f17b89;--redbg:#41242c;--violet:#a99af5;--violetbg:#2a2548;--shadow:0 14px 36px rgba(0,0,0,.24)}
+html[data-theme="light"]{color-scheme:light;--bg:#edf2f8;--card:#ffffff;--ink:#172338;--muted:#65748b;--line:#d8e1ed;--navy:#f8fbff;--navy2:#eaf1fa;--blue:#315fce;--cyan:#159fa6;--green:#16875d;--greenbg:#e6f6ee;--amber:#a96b09;--amberbg:#fff3d9;--red:#bd3546;--redbg:#ffedf0;--violet:#6754bd;--violetbg:#efecff;--shadow:0 10px 28px rgba(35,54,83,.09)}
+html[data-theme="light"] body{background:linear-gradient(180deg,#eaf0f7 0%,#f4f7fb 55%,#edf2f8 100%);color:var(--ink)}
+html[data-theme="light"] .topbar{background:linear-gradient(110deg,#fbfdff,#e7eef8);color:#172b49;border-bottom:1px solid #d7e1ef;box-shadow:0 5px 18px rgba(40,60,90,.08)}
+html[data-theme="light"] .brand small{color:#687b97}
+html[data-theme="light"] .operator{color:#334866}
+html[data-theme="light"] .avatar{background:#dce7f5;color:#2a4e7c}
+html[data-theme="light"] .mode{color:#405675;border-color:#cbd7e7;background:#f5f8fc}
+html[data-theme="light"] .side{background:#f8fafd;border-color:#d8e1ed}
+html[data-theme="light"] .nav button{color:#4f6079}
+html[data-theme="light"] .nav button.active{background:#dfe9fb;color:#244fae}
+html[data-theme="light"] .nav button:hover{background:#eaf0f8}
+html[data-theme="light"] .side-note{background:#eaf1fa;color:#60718a}
+html[data-theme="light"] .side-note b{color:#2d4260}
+html[data-theme="light"] .card{background:#fff;border-color:#dce4ee;box-shadow:0 10px 28px rgba(38,58,88,.08)}
+html[data-theme="light"] .empty{background:#f8fafd;border-color:#cdd9e8;color:#718096}
+html[data-theme="light"] .empty b{color:#40536e}
+html[data-theme="light"] .notice{background:#fbfcfe;border-color:#e0e7f0}
+html[data-theme="light"] .field input,html[data-theme="light"] .field select,html[data-theme="light"] .field textarea,html[data-theme="light"] .filters input,html[data-theme="light"] .filters select{background:#fff;color:#24324a;border-color:#d5dfeb}
+html[data-theme="light"] .choice{background:#fff;color:#51617a}
+html[data-theme="light"] .choice.selected{background:#eaf0ff;border-color:#7392df;color:#244fae}
+html[data-theme="light"] .preview-box{background:#f7faff;border-color:#dce5f1}
+html[data-theme="light"] .ghost{background:#e9eef6;color:#40536e}
+html[data-theme="light"] .outline{background:#fff;border-color:#d6e0ed;color:#40536e}
+html[data-theme="light"] .mobile-nav{background:rgba(250,252,255,.97);border-color:#d8e1ed}
+html[data-theme="light"] .mobile-nav button{color:#687992}
+html[data-theme="light"] .mobile-nav button.active{color:#244fae;background:#e8effc}
+html[data-theme="light"] .toast{background:#203756;color:#fff}
+html[data-theme="light"] .howto{background:#f4f8fe;border-color:#d8e4f3}
+html[data-theme="light"] .publish-result{background:#eaf8f1;border-color:#bfe5d3;color:#176b4b}
+html[data-theme="light"] .form-feedback.info{background:#edf4ff;border-color:#d6e4ff;color:#31528e}
+html[data-theme="light"] .form-feedback.error{background:#fff0f1;border-color:#f0cbd0;color:#a82e3d}
+html[data-theme="light"] .form-feedback.success{background:#e8f7f0;border-color:#bfe5d3;color:#176b4b}
+html[data-theme="light"] .storage-warning{background:#fff0f1;border-color:#d54c5a;color:#962b38}
+html[data-theme="light"] .form-card,html[data-theme="light"] .preview>.card{background:#fff}
+html[data-theme="light"] .table td{border-color:#e6ecf3;color:#34445f}
+html[data-theme="light"] .table th{border-color:#dce4ef;color:#78869b}
+html[data-theme="light"] .foot{color:#8794a7}
+html[data-theme="dark"] .topbar{background:linear-gradient(110deg,#081321,#142943 62%,#1a3457);border-bottom:1px solid #2b405c}
+html[data-theme="dark"] .side{background:#0f1929;border-color:#28374c}
+html[data-theme="dark"] body{transition:background .22s ease,color .22s ease}
+html[data-theme="light"] body{transition:background .22s ease,color .22s ease}
+.card,.side,.topbar,.mobile-nav,.field input,.field select,.field textarea,.choice,.btn,.preview-box{transition:background-color .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease}
+
+body,.side,.card,.notice,.field input,.field select,.field textarea,.choice,.radio,.filters input,.filters select,.empty,.preview-box,.side-note,.nav button,.btn,.table td,.table th{transition:background-color .22s ease,color .22s ease,border-color .22s ease,box-shadow .22s ease}
+html[data-theme="dark"] body{background:radial-gradient(ellipse at 15% 0%,#182943 0%,#0b1220 46%);color:var(--ink)}
+html[data-theme="dark"] .side{background:#101a2a;border-color:var(--line)}
+html[data-theme="dark"] .side-label{color:#8091aa}
+html[data-theme="dark"] .nav button{color:#b0bfd3}
+html[data-theme="dark"] .nav button.active{background:#223454;color:#a9bdff}
+html[data-theme="dark"] .nav button:hover{background:#1a2940}
+html[data-theme="dark"] .side-note{background:#19283d;color:#a7b5c9}
+html[data-theme="dark"] .side-note b{color:#e5edf9}
+html[data-theme="dark"] .main{color:var(--ink)}
+html[data-theme="dark"] .pagehead p,html[data-theme="dark"] .section-title p,html[data-theme="dark"] .stat-label,html[data-theme="dark"] .line-desc{color:var(--muted)}
+html[data-theme="dark"] .card{background:linear-gradient(155deg,#172337,#131d2d);border-color:#29384e;box-shadow:var(--shadow)}
+html[data-theme="dark"] .stat-icon{background:#243657;color:#a9bdff}
+html[data-theme="dark"] .stat:nth-child(2) .stat-icon{background:#3a2e1e;color:#edbd68}
+html[data-theme="dark"] .stat:nth-child(3) .stat-icon{background:#41242c;color:#f17b89}
+html[data-theme="dark"] .stat:nth-child(4) .stat-icon{background:#183b35;color:#5bc69a}
+html[data-theme="dark"] .empty{background:#111d2d;border-color:#33445f;color:#9cabc0}
+html[data-theme="dark"] .empty b{color:#e4ecf8}
+html[data-theme="dark"] .notice{background:#111c2c;border-color:#2a3a52}
+html[data-theme="dark"] .notice p,html[data-theme="dark"] .notice-meta{color:#a0aec2}
+html[data-theme="dark"] .tag,html[data-theme="dark"] .line-pill{background:#243657;color:#adc0ff}
+html[data-theme="dark"] .tag.high{background:#41331e;color:#f0c477}
+html[data-theme="dark"] .tag.critical{background:#462630;color:#ff9ba6}
+html[data-theme="dark"] .tag.low{background:#193c34;color:#75d6ae}
+html[data-theme="dark"] .badge-status{background:#193c34;color:#75d6ae}
+html[data-theme="dark"] .badge-status.off{background:#2b3545;color:#b3bfd0}
+html[data-theme="dark"] .field label{color:#d6e0ef}
+html[data-theme="dark"] .field small{color:#8f9fb5}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea,html[data-theme="dark"] .filters input,html[data-theme="dark"] .filters select{background:#0e1828;border-color:#34445c;color:#e7eef9}
+html[data-theme="dark"] .field input::placeholder,html[data-theme="dark"] .field textarea::placeholder,html[data-theme="dark"] .filters input::placeholder{color:#7889a1}
+html[data-theme="dark"] .field input:focus,html[data-theme="dark"] .field select:focus,html[data-theme="dark"] .field textarea:focus{border-color:#7d9bff;box-shadow:0 0 0 3px #7295ff24}
+html[data-theme="dark"] .choice,html[data-theme="dark"] .radio{background:#111d2d;color:#b5c2d5;border-color:#2e4059}
+html[data-theme="dark"] .choice.selected{background:#223455;border-color:#7295ff;color:#c0ceff}
+html[data-theme="dark"] .radio input{accent-color:#91aaff}
+html[data-theme="dark"] .preview-box{background:#101b2b;border-color:#2b3c54}
+html[data-theme="dark"] .preview-box h3,html[data-theme="dark"] .preview-title{color:#e8eef8}
+html[data-theme="dark"] .preview-text{color:#9cacbf}
+html[data-theme="dark"] .preview-line{background:#243657;color:#b6c7ff}
+html[data-theme="dark"] .warning{background:#3b301f;color:#f1cc86;border-color:#66502c}
+html[data-theme="dark"] .ghost{background:#26364f;color:#c0cde0}
+html[data-theme="dark"] .outline{background:#17263b;border-color:#3a4c66;color:#c1cde0}
+html[data-theme="dark"] .primary{background:linear-gradient(135deg,#587be8,#4264cb);color:white;box-shadow:0 8px 22px #243d7a66}
+html[data-theme="dark"] .primary:hover{background:linear-gradient(135deg,#6c8cf2,#5071dc)}
+html[data-theme="dark"] .table th{color:#93a4bb;border-color:#30415a}
+html[data-theme="dark"] .table td{color:#c8d3e3;border-color:#26364c}
+html[data-theme="dark"] .table td span{color:#94a5bd!important}
+html[data-theme="dark"] .side-kpis .line-row{border-color:#2b3b52;color:#d4deed}
+html[data-theme="dark"] .foot{color:#71839d}
+html[data-theme="dark"] .publish-result{background:#15372f!important;border-color:#2b6653!important;color:#a2e6c7!important}
+html[data-theme="dark"] .form-feedback.info{background:#1b2c47;border-color:#354c70;color:#c4d5f5}
+html[data-theme="dark"] .form-feedback.error{background:#3e242d;border-color:#75404b;color:#ffb3bb}
+html[data-theme="dark"] .form-feedback.success{background:#183b33;border-color:#2f6a53;color:#a2e6c7}
+html[data-theme="dark"] .storage-warning{background:#3b301f;border-color:#66502c;color:#f1cc86}
+html[data-theme="dark"] .invalid input,html[data-theme="dark"] .invalid select,html[data-theme="dark"] .invalid textarea{border-color:#f17b89!important;box-shadow:0 0 0 3px #f17b8924}
+html[data-theme="dark"] .mobile-nav{background:#111c2c;border-color:#2a3a52}
+html[data-theme="dark"] .mobile-nav button{color:#a8b8cd}
+html[data-theme="dark"] .mobile-nav button.active{color:#a9bdff;background:#223454}
+html[data-theme="dark"] .toast{background:#243653;color:#f4f7fc}
+.appearance-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,300px);gap:22px;align-items:center}
+.appearance-copy{display:flex;align-items:center;gap:13px}.appearance-control{display:grid;gap:8px}.appearance-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#597be5,#28aaa9);color:#fff;font-size:25px}.appearance-copy h2{font-size:16px;margin:0 0 3px}.appearance-copy p{font-size:12px;color:var(--muted);margin:0}.appearance-label{font-size:12px;font-weight:800;color:var(--muted)}.theme-select{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:var(--bg);color:var(--ink)}.theme-status{margin:0;font-size:11px;color:var(--muted)}
+.form-actions .primary{min-width:190px;min-height:46px;font-size:14px}.form-actions .primary:disabled{opacity:.72;cursor:wait}
+#publishResult{scroll-margin-top:90px}
+@media(max-width:620px){.appearance-card{grid-template-columns:1fr}.appearance-copy{align-items:flex-start}}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar"><div class="brand"><div class="logo">🚌</div><div>Central ConectaBus<small>Panel de operaciones · v2.1</small></div></div><div class="topright"><span class="mode" id="themeBadge">MODO OSCURO · PRUEBA LOCAL</span><div class="operator"><div class="avatar">C</div><span>Central</span></div></div></header>
+<div class="shell">
+<aside class="side"><div class="side-label">Operaciones</div><nav class="nav" id="sideNav"><button class="active" data-page="dashboard"><span>▦</span>Panel general</button><button data-page="new"><span>＋</span>Publicar aviso</button><button data-page="active"><span>◉</span>Avisos activos</button><button data-page="history"><span>◷</span>Historial</button><button data-page="help"><span>⚙</span>Configuración</button></nav><div class="side-note"><b>ConectaBus · Central</b>Desde aquí se preparan los avisos que verá cada pasajero según la línea que haya seleccionado.</div></aside>
+<main class="main">
+<div id="storageWarning" class="storage-warning hidden" role="alert" aria-live="assertive"></div>
+<section id="page-dashboard" class="page">
+<div class="pagehead"><div><div class="eyebrow">Resumen del servicio</div><h1>Panel general</h1><p>Controlá las novedades de las líneas y revisá qué información está activa.</p></div><button class="btn primary" data-go="new">＋ Nuevo aviso</button></div>
+<div class="warning" style="margin:0 0 16px"><b>Modo de prueba local</b> Los avisos publicados se muestran en esta Central y en este navegador. Todavía no se envían a ConectaBus ni a otros dispositivos.</div>
+<div id="publishResult" class="publish-result hidden" role="status" aria-live="polite"><div><b id="publishResultTitle">¡Aviso publicado!</b><p id="publishResultText"></p></div><div class="result-actions"><button class="btn outline small" data-go="active">Ver avisos activos</button><button class="btn outline small" data-go="history">Ver historial</button></div></div>
+<div class="grid stats"><div class="card stat"><div><div class="stat-label">Avisos activos</div><div class="stat-num" id="statActive">0</div><div class="stat-note">Publicados desde esta central</div></div><div class="stat-icon">📢</div></div><div class="card stat"><div><div class="stat-label">Demoras</div><div class="stat-num" id="statDelay">0</div><div class="stat-note">Con impacto en el horario</div></div><div class="stat-icon">⏱️</div></div><div class="card stat"><div><div class="stat-label">Avisos urgentes</div><div class="stat-num" id="statUrgent">0</div><div class="stat-note">Requieren atención</div></div><div class="stat-icon">⚠️</div></div><div class="card stat"><div><div class="stat-label">Colectivos con novedades</div><div class="stat-num" id="statLines">0</div><div class="stat-note">Líneas distintas afectadas</div></div><div class="stat-icon">🚌</div></div></div>
+<div class="grid"><div class="card"><div class="section-title"><div><h2>Últimos avisos publicados</h2><p>Las novedades más recientes de la central.</p></div><button class="btn ghost small" data-go="active">Ver todos</button></div><div id="dashboardNotices" class="notice-list"></div></div></div>
+</section>
+<section id="page-new" class="page hidden">
+<div class="pagehead"><div><div class="eyebrow">Comunicación del servicio</div><h1>Publicar un aviso</h1><p>Elegí el colectivo y seleccioná una parada de su recorrido. Si la novedad ocurre en otra calle, podés escribirla manualmente.</p></div></div>
+<div class="card howto"><div class="howto-icon">💡</div><div><strong>¿Cómo se publica?</strong><ol><li>Elegí la línea y el sentido del colectivo.</li><li>Seleccioná la calle o parada donde ocurre el problema.</li><li>Indicá qué pasó, escribí un título y una explicación.</li><li>Al final, tocá el botón azul <b>Publicar aviso</b>. La app te llevará al Panel general y vas a ver el aviso en «Últimos avisos publicados».</li></ol></div></div>
+<div class="form-layout"><form class="card form-card" id="noticeForm" novalidate>
+<div id="formFeedback" class="form-feedback info" role="status" aria-live="polite">Completá los campos del formulario. Los minutos de demora son opcionales.</div>
+<div class="section-title"><div><h2>1. ¿A qué colectivo afecta?</h2><p>El aviso solamente se mostrará a usuarios de esa línea.</p></div><span class="line-pill">REQUERIDO</span></div>
+<div class="form-grid"><div class="field"><label for="line">Colectivo / línea</label><select id="line" required><option value="" selected disabled>Seleccioná una línea…</option><option value="541">541 · Zanjón Civit</option><option value="542">542 · Cuadro Benegas</option><option value="543">543 · Los Coroneles</option><option value="544">544 · Salto de las Rosas</option><option value="545">545 · Villa Atuel</option><option value="547">547 · El Nihuil</option><option value="548">548 · Salto de las Rosas (por Cuarteles)</option><option value="571">571 · Cristo (por Jensen)</option><option value="572">572 · El Usillal</option><option value="573">573 · Toledano a Colonia Iaccarini</option><option value="574">574 · El Cristo</option><option value="575">575 · Villa 25 de Mayo</option><option value="__other">Otra línea…</option></select><small>Elegí el colectivo al que afecta la novedad.</small></div><div class="field hidden" id="otherLineWrap"><label for="otherLine">Número de línea</label><input id="otherLine" inputmode="numeric" maxlength="8" placeholder="Ej.: 565"></div><div class="field"><label for="direction">Sentido</label><select id="direction"><option value="Ambos sentidos">Ambos sentidos</option><option value="Ida">Ida</option><option value="Vuelta">Vuelta</option></select></div><div class="field"><label for="scope">Parte del recorrido</label><select id="scope"><option value="Punto o tramo específico">Punto o tramo específico</option><option value="Recorrido completo">Recorrido completo</option><option value="Cabecera / terminal">Cabecera / terminal</option></select></div></div>
+<div class="section-title"><div><h2>2. ¿Qué ocurrió?</h2><p>Seleccioná el motivo principal del aviso.</p></div></div>
+<div class="field"><label for="type">Tipo de aviso</label><select id="type" required><option value="" selected disabled>Seleccioná qué ocurrió…</option><option value="demora">⏱️ Demora de una unidad</option><option value="desvio">↪️ Desvío por obras o corte</option><option value="corte">🚧 Calle cortada / tránsito interrumpido</option><option value="accidente">⚠️ Accidente o incidente vial</option><option value="parada_suspendida">🚏 Parada temporalmente suspendida</option><option value="parada_movida">📍 Parada trasladada</option><option value="frecuencia">🕒 Frecuencia reducida</option><option value="interrupcion">⛔ Interrupción del servicio</option><option value="unidad">🚌 Unidad fuera de servicio / reemplazo</option><option value="ocupacion">👥 Alta ocupación</option><option value="cambio">🔀 Cambio temporal de recorrido</option><option value="refuerzo">➕ Refuerzo de unidades</option><option value="normalizado">✅ Servicio normalizado</option><option value="informacion">ℹ️ Información importante</option></select></div>
+<div class="field"><label>Gravedad</label><div class="choice-grid" id="severityChoices"><button type="button" class="choice" data-severity="low"><strong>🟢</strong>Informativo</button><button type="button" class="choice selected" data-severity="medium"><strong>🟠</strong>Moderado</button><button type="button" class="choice" data-severity="critical"><strong>🔴</strong>Urgente</button></div><small>Usá “Urgente” solo si afecta de forma importante la circulación o la seguridad.</small></div>
+<div class="section-title"><div><h2>3. ¿Dónde y cuándo?</h2><p>Cuanto más precisa sea la ubicación, más útil será el aviso.</p></div></div>
+<div class="form-grid"><div class="field full"><label for="location">Calle, parada o punto por donde pasa ese colectivo</label><select id="location" required><option value="">Primero elegí el colectivo y el sentido…</option></select><small>La lista cambia según la línea y el sentido seleccionado. Se muestran los puntos registrados en el recorrido de ConectaBus.</small></div><div class="field full hidden" id="otherLocationWrap"><label for="otherLocation">Otra calle o ubicación (escribir manualmente)</label><input id="otherLocation" maxlength="120" placeholder="Ej.: Av. Mitre y San Martín"><small>Usá esta opción si el aviso ocurre en una calle distinta, por ejemplo por un desvío, corte o incidente.</small></div><div class="field"><label for="delay">Demora estimada (minutos) · opcional</label><input id="delay" type="number" min="0" max="240" placeholder="Ej.: 15"><small>Podés dejarlo vacío si todavía no sabés cuánto se va a demorar.</small></div><div class="field"><label for="duration">Vigencia estimada</label><select id="duration"><option value="30 minutos">30 minutos</option><option value="1 hora" selected>1 hora</option><option value="2 horas">2 horas</option><option value="Hasta nuevo aviso">Hasta nuevo aviso</option><option value="Todo el día">Todo el día</option></select></div><div class="field full"><label for="title">Título breve del aviso</label><input id="title" required maxlength="100" placeholder="Ej.: Demora por tránsito en Av. Mitre"></div><div class="field full"><label for="detail">¿Qué pasó y cómo afecta al recorrido?</label><textarea id="detail" required maxlength="600" placeholder="Ej.: La unidad circula con demora por congestión vehicular. Puede aumentar el tiempo de espera en las próximas paradas."></textarea><small>Este texto será visible para los pasajeros.</small></div></div>
+<div class="field"><label>Opciones de publicación</label><div class="radio-line"><label class="radio"><input type="checkbox" id="notify" checked> Destacar el aviso en ConectaBus</label><label class="radio"><input type="checkbox" id="showDelay" checked> Mostrar demora estimada si corresponde</label></div></div>
+<div class="form-actions"><button class="btn ghost" type="reset" id="resetForm">Limpiar</button><button class="btn primary" type="submit">📣 Publicar aviso</button></div>
+</form>
+<aside class="preview"><div class="card"><div class="section-title"><div><h2>Vista previa</h2><p>Así se vería para el pasajero.</p></div></div><div class="preview-box"><span class="preview-line" id="pvLine">LÍNEA 542</span><div class="preview-title" id="pvTitle">Demora por tránsito en Av. Mitre</div><div class="preview-text" id="pvDetail">La unidad circula con demora por congestión vehicular.</div><div class="notice-meta"><span id="pvLocation">⌖ Ubicación pendiente</span><span id="pvDirection">↔ Ambos sentidos</span></div><div style="margin-top:10px"><span class="tag high" id="pvSeverity">MODERADO</span></div></div><div class="warning"><b>Antes de publicar:</b> verificá la línea, la calle y el sentido. Si cambia la situación, actualizá o cerrá el aviso para no dejar información vieja.</div></div></aside></div>
+</section>
+<section id="page-active" class="page hidden"><div class="pagehead"><div><div class="eyebrow">Seguimiento</div><h1>Avisos activos</h1><p>Actualizá o cerrá las novedades cuando el servicio vuelva a la normalidad.</p></div><button class="btn primary" data-go="new">＋ Nuevo aviso</button></div><div class="card"><div class="filters"><input id="filterSearch" placeholder="Buscar por línea, calle o título"><select id="filterType"><option value="">Todos los tipos</option><option value="demora">Demoras</option><option value="desvio">Desvíos</option><option value="corte">Cortes</option><option value="normalizado">Normalizados</option></select></div><div id="activeList" class="notice-list"></div></div></section>
+<section id="page-history" class="page hidden"><div class="pagehead"><div><div class="eyebrow">Registro</div><h1>Historial de avisos</h1><p>Consultá las novedades publicadas y cuándo fueron cerradas.</p></div><button class="btn outline" id="exportBtn">⬇ Exportar historial</button></div><div class="card"><div id="historyTable" class="table-wrap"></div></div></section>
+<section id="page-help" class="page hidden"><div class="pagehead"><div><div class="eyebrow">Preferencias</div><h1>Configuración</h1><p>Personalizá la apariencia y administrá las herramientas de la Central.</p></div></div><div class="card appearance-card"><div class="appearance-copy"><div class="appearance-icon">◐</div><div><h2>Modo de visualización</h2><p>Elegí el aspecto que te resulte más cómodo. El cambio se aplica en el momento.</p></div></div><div class="appearance-control"><label for="themeSelect" class="appearance-label">Apariencia</label><select id="themeSelect" class="theme-select"><option value="dark">Oscuro (recomendado)</option><option value="light">Claro</option></select><p id="themeStatus" class="theme-status" aria-live="polite">El modo oscuro está activado.</p></div></div><div class="grid two" style="margin-top:16px"><div class="card"><h2 style="font-size:16px;margin:0 0 12px">Tipos de avisos disponibles</h2><div class="side-kpis"><div class="line-row"><span>Demoras de unidades</span><span class="tag high">Horario</span></div><div class="line-row"><span>Desvíos, cortes y accidentes</span><span class="tag critical">Recorrido</span></div><div class="line-row"><span>Paradas suspendidas o trasladadas</span><span class="tag">Paradas</span></div><div class="line-row"><span>Frecuencia reducida o refuerzos</span><span class="tag">Frecuencia</span></div><div class="line-row"><span>Interrupciones y unidades fuera de servicio</span><span class="tag critical">Servicio</span></div><div class="line-row"><span>Alta ocupación</span><span class="tag">Pasajeros</span></div><div class="line-row"><span>Servicio normalizado</span><span class="tag low">Cierre</span></div></div></div><div class="card"><h2 style="font-size:16px;margin:0 0 12px">Cómo funciona el envío</h2><p style="color:var(--muted);font-size:13px">Esta primera versión funciona en modo local para probar el diseño, los campos y el flujo de publicación. Los avisos quedan guardados en este navegador y pueden exportarse.</p><div class="warning"><b>Conexión compartida pendiente.</b> Para que un aviso enviado desde la Central aparezca en los celulares de todos los usuarios de ConectaBus, ambas aplicaciones deberán conectarse a una base de datos en la nube. Todavía no se están enviando avisos reales a otros dispositivos.</div><p style="font-size:12px;color:var(--muted);margin:12px 0 0">La próxima etapa será conectar las dos apps a un servicio compartido, con acceso protegido para la central y lectura de avisos para los pasajeros.</p><button class="btn outline" style="margin-top:14px" id="exportJson">⬇ Descargar datos de prueba</button></div></div><div class="card" style="margin-top:16px"><h2 style="font-size:16px;margin:0 0 8px">Buenas prácticas</h2><p style="font-size:13px;color:var(--muted);margin:0">Publicá solo información confirmada. Indicá siempre la calle, el sentido y la vigencia. No incluyas datos personales de choferes o pasajeros. Para emergencias, usá los canales oficiales: esta herramienta informa a los usuarios, no reemplaza a los servicios de emergencia.</p></div></section>
+<div class="foot">CENTRAL CONECTABUS · Prototipo de trabajo · No conectado aún al servicio público</div>
+</main></div>
+<nav class="mobile-nav" id="mobileNav"><button class="active" data-page="dashboard"><span>▦</span>Inicio</button><button data-page="new"><span>＋</span>Publicar</button><button data-page="active"><span>◉</span>Activos</button><button data-page="history"><span>◷</span>Historial</button><button data-page="help"><span>⚙</span>Config.</button></nav>
+</div>
+<div id="toast" class="toast hidden" role="status"></div>
+<script>
+(()=>{
+'use strict';
+const KEY='central_conectabus_notices_v1';let storageProblem='';let dataProblem='';let persistenceMode='persistent';let notices=load();let severity='medium';let editingId=null;let submitting=false;
+const $=id=>document.getElementById(id);
+const typeNames={demora:'Demora',desvio:'Desvío',corte:'Calle cortada',accidente:'Accidente / incidente',parada_suspendida:'Parada suspendida',parada_movida:'Parada trasladada',frecuencia:'Frecuencia reducida',interrupcion:'Interrupción',unidad:'Unidad fuera de servicio',ocupacion:'Alta ocupación',cambio:'Cambio de recorrido',refuerzo:'Refuerzo de unidades',normalizado:'Servicio normalizado',informacion:'Información importante'};
+const severityNames={low:'INFORMATIVO',medium:'MODERADO',high:'IMPORTANTE',critical:'URGENTE'};
+function storageError(e){
+ const name=e&&e.name?e.name:'Error';
+ if(name==='SecurityError')return 'El navegador bloqueó el almacenamiento de la Central. Esto suele ocurrir cuando abrís el archivo descargado directamente (dirección file://), en modo incógnito o con los datos del sitio bloqueados. Solución: abrí la Central desde su dirección HTTPS de GitHub Pages (https://…) y permití el almacenamiento del sitio.';
+ if(name==='QuotaExceededError'||name==='NS_ERROR_DOM_QUOTA_REACHED')return 'El almacenamiento de este sitio está lleno. Solución: liberá espacio en los datos del sitio de la Central o exportá y limpiá los datos antiguos antes de volver a publicar.';
+ return 'El navegador no permitió guardar el aviso ('+name+(e&&e.message?': '+e.message:'')+'). Revisá los permisos y el almacenamiento del sitio y volvé a intentar.';
+}
+function load(){
+ try{
+  const raw=window.localStorage.getItem(KEY);
+  if(!raw)return [];
+  const parsed=JSON.parse(raw);
+  if(!Array.isArray(parsed))throw new Error('FORMAT_INVALIDO');
+  return parsed.filter(n=>n&&typeof n==='object'&&n.id&&n.line&&n.title&&n.detail);
+ }catch(e){
+  persistenceMode='memory';
+  if(e&&e.message==='FORMAT_INVALIDO'){
+   dataProblem='El registro guardado tenía un formato inesperado. La Central arrancó una lista nueva en memoria para que puedas seguir probando sin borrar los datos anteriores.';
+  }else if(e instanceof SyntaxError){
+   dataProblem='El historial anterior no se pudo leer porque estaba dañado. No se sobrescribió. Los avisos nuevos se mostrarán durante esta sesión.';
+  }else{
+   storageProblem=storageError(e);
+  }
+  return [];
+ }
+}
+function checkStorage(){
+ try{
+  const key=KEY+'_diagnostic';window.localStorage.setItem(key,'ok');
+  const check=window.localStorage.getItem(key);window.localStorage.removeItem(key);
+  if(check!=='ok')throw new Error('El navegador no confirmó la prueba de almacenamiento.');
+  if(dataProblem){persistenceMode='memory';storageProblem=dataProblem;return false;}
+  persistenceMode='persistent';storageProblem='';return true;
+ }catch(e){persistenceMode='memory';storageProblem=storageError(e);return false;}
+}
+function showStorageWarning(){
+ const box=$('storageWarning');if(!box)return;
+ if(persistenceMode==='persistent'&&!dataProblem){box.classList.add('hidden');box.textContent='';return;}
+ box.classList.remove('hidden');
+ const reason=dataProblem||storageProblem||'El navegador no permite guardar datos de forma permanente.';
+ box.innerHTML='<strong>⚠️ MODO DE PRUEBA EN ESTA PESTAÑA</strong><div>'+esc(reason)+'</div><ul><li>Podés publicar y ver los avisos en el Panel, Activos e Historial durante esta sesión.</li><li>Los avisos pueden perderse al cerrar o recargar la página.</li><li>Para conservarlos, abrí la Central desde su dirección HTTPS y permití el almacenamiento del sitio.</li></ul>';
+}
+function save(list=notices){
+ if(dataProblem){persistenceMode='memory';storageProblem=dataProblem;showStorageWarning();return false;}
+ try{
+  const serialized=JSON.stringify(list);
+  window.localStorage.setItem(KEY,serialized);
+  const verify=window.localStorage.getItem(KEY);
+  if(verify!==serialized)throw new Error('El navegador no confirmó que los datos quedaran guardados.');
+  if(!dataProblem){persistenceMode='persistent';storageProblem='';}
+  showStorageWarning();return !dataProblem;
+ }catch(e){persistenceMode='memory';storageProblem=storageError(e);showStorageWarning();return false;}
+}
+function expireOld(){let changed=false;const t=Date.now();notices.forEach(n=>{if(n.status==='active'&&n.expiresMs&&t>=n.expiresMs){n.status='expired';n.expiredAt=now();changed=true}});if(changed)save()}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function line(){return $('line').value==='__other'?$('otherLine').value.trim():$('line').value}
+function lineLabel(n){return 'Línea '+n}
+function now(){return new Date().toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'})}
+function toast(msg){$('toast').textContent=msg;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),3000)}
+function formMessage(msg,kind='error'){$('formFeedback').textContent=msg;$('formFeedback').className='form-feedback '+kind}
+function clearFieldErrors(){document.querySelectorAll('#noticeForm .field.invalid').forEach(x=>x.classList.remove('invalid'))}
+function go(page){document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));$('page-'+page).classList.remove('hidden');document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));if(page==='dashboard')renderDashboard();if(page==='active')renderActive();if(page==='history')renderHistory();window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+const routeStops={
+'541':{name:'Zanjón Civit',ida:['Av. Gral. Paz esq. Granaderos','Libertador 150','Los Sauces','INTA','Finca García (Z. Civit)','Bestani Esc. Buttini'],vuelta:['Bestani Esc. Buttini','Finca García (Z. Civit)','INTA','Los Sauces','B° San Valentín','Av. Gral. Paz esq. Granaderos']},
+'542':{name:'Cuadro Benegas',ida:['E.T.O. San Rafael','C. Suárez 120','Los Sauces','Isla Río Diamante','Zucca','Bestani','P. Vargas','Algodón','Pueblo Benegas'],vuelta:['Pueblo Benegas','Algodón','P. Vargas','Bestani','Zucca','Isla Río Diamante','Los Sauces','C. Suárez 120','E.T.O. San Rafael']},
+'543':{name:'Los Coroneles',ida:['Av. Gral. Paz esq. Granaderos','Libertador 150','Florida','Bestani','Inquilinos (Algodón)','Finca Blanco (Coroneles)'],vuelta:['Finca Blanco (Coroneles)','P. Vargas','Inquilinos (Algodón)','Bestani','Parque M. Moreno','Florida','Av. Gral. Paz esq. Granaderos']},
+'544':{name:'Salto de las Rosas',ida:['Av. Gral. Paz esq. Granaderos','Libertador 150','Los Sauces','Florida','Tropezón','Los Claveles','Salto de las Rosas','Babacce','Bella Vista'],vuelta:['Bella Vista','Babacce','El Progreso','B° Salto','Salto de las Rosas','Los Claveles','Tropezón','Florida','Los Sauces','Av. Gral. Paz esq. Granaderos']},
+'545':{name:'Villa Atuel',ida:['San Rafael','Sol de Mayo','Rodrigo','La Pichana','Plaza Tropezón','Salto de las Rosas','Cañada Seca','Medrano','Casa Juri','La Guevarina','La Vasconia','B° Nevado','Villa Atuel','Jaime Prats'],vuelta:['Jaime Prats','Villa Atuel','La Vasconia','La Guevarina','Casa Juri','Medrano','Cañada Seca','Salto de las Rosas','El Tropezón','La Pichana','Rodrigo','Sol de Mayo','San Rafael']},
+'547':{name:'El Nihuil',ida:['Sale de San Rafael','Llega a El Nihuil'],vuelta:['Sale de El Nihuil','Llega a San Rafael']},
+'548':{name:'Salto de las Rosas (por Cuarteles)',ida:['E.T.O. San Rafael','Av. Yrigoyen 298','Pichana','Salto de las Rosas','Babacce','Medrano','Cañada Seca','Casa Juri'],vuelta:['Casa Juri','Cañada Seca','Medrano','El Progreso','Salto de las Rosas','Pichana','Zamora','Av. Yrigoyen 298','Av. Gral. Paz esq. Granaderos']},
+'571':{name:'Cristo (por Jensen)',ida:['Mitre 333','Av. Yrigoyen 220','Av. Yrigoyen y Rawson','20 de Junio y Sarmiento','El Toledano y Sarmiento','Jensen y Ruta 143'],vuelta:['Jensen y Ruta 143','Zamarbide y Ruta 143','B° El Sol','Las Vírgenes y El Toledano','Rawson y Av. Yrigoyen','Av. Yrigoyen 181','E.T.O. San Rafael']},
+'572':{name:'El Usillal',ida:['Av. Gral. Paz esq. Granaderos','Av. Yrigoyen 220','El Toledano y Ruta 143','B° Sol','Aeroclub','Salto y Ruta 143','Salto y Costa de las Vías','Sardini y Costa de las Vías','Los Maitenes','Mercedes y Sardini','El Usillal','Cnia. Iaccarini'],vuelta:['El Usillal','Mercedes y Sardini','Los Maitenes','Salto y Costa de las Vías','Costa del Toledano','Toledano y Constanzo','B° Sol','Las Vírgenes y El Chañaral','Chañaral y Ruta 143','Rotonda','Av. Yrigoyen 181','Av. Gral. Paz esq. Granaderos']},
+'573':{name:'Toledano a C. Iaccarini',ida:['Av. Gral. Paz esq. Granaderos','Av. Yrigoyen 220','Rawson y Ortubia','La Católica','Toledano y Ortubia','Toledano y RN 143','Toledano y Vírgenes','Chañaral - Las Vírgenes','Chañaral - Constanzo','Toledano y Ortubia (2.ª)','Vuelta Machín','Mercedes y Central','El Usillal'],vuelta:['El Usillal','Mercedes y Central','Vuelta Machín','Costa El Toledano','B° El Sol','Vírgenes y Chañaral','Ortubia y Toledano','Chañaral y RN 143','Ortubia y Rawson','Las Vírgenes y Rawson','Rotonda','Av. Yrigoyen 181','Av. Gral. Paz esq. Granaderos']},
+'574':{name:'El Cristo',ida:['Av. Gral. Paz esq. Granaderos','Av. Yrigoyen 220','Av. Yrigoyen y Rawson (Rotonda)','El Toledano y Ruta 143','Aeroclub','Jensen y Los Sauces','Sardini y Ruta 143','Medel','Cristo'],vuelta:['Cristo','Medel','Sardini y Ruta 143','Sarmiento y Bertani','Aeroclub','Toledano y Ruta 143','Av. Yrigoyen y Rawson (Rotonda)','La Católica','Av. Yrigoyen 181','Av. Gral. Paz esq. Granaderos']},
+'575':{name:'Villa 25 de Mayo',ida:['Av. Gral. Paz esq. Granaderos','Av. Yrigoyen 220','Av. Yrigoyen y Rawson (Rotonda)','Toledano y Ruta 143','Aeroclub','Sardini y Ruta 143','Cristo','Colonia Hogar','Villa 25 de Mayo'],vuelta:['Villa 25 de Mayo','Colonia Hogar','Cristo','Sardini y Ruta 143','Aeroclub','Toledano y Ruta 143','Av. Yrigoyen y Rawson (Rotonda)','Av. Yrigoyen 181','Av. Gral. Paz esq. Granaderos']}
+};
+function selectedRouteStops(){const r=routeStops[$('line').value];if(!r)return[];const d=$('direction').value;if(d==='Ida')return r.ida;if(d==='Vuelta')return r.vuelta;return [...new Set([...r.ida,...r.vuelta])]}
+function syncManualLocation(){const manual=$('line').value==='__other'||$('location').value==='__other';$('otherLocationWrap').classList.toggle('hidden',!manual);$('otherLocation').required=manual;if(!manual)$('otherLocation').value=''}
+function selectedLocation(){return $('line').value==='__other'||$('location').value==='__other' ? $('otherLocation').value.trim() : $('location').value.trim()}
+function refreshLocationOptions(savedValue=''){const sel=$('location');const stops=selectedRouteStops();sel.innerHTML='<option value="">Seleccioná una calle, parada o punto…</option>'+stops.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('')+'<option value="__other">Otra calle o ubicación…</option>';if(savedValue&&stops.includes(savedValue)){sel.value=savedValue}else if(savedValue){sel.value='__other';$('otherLocation').value=savedValue}else{sel.value=''}syncManualLocation()}
+$('line').addEventListener('change',()=>{$('otherLineWrap').classList.toggle('hidden',$('line').value!=='__other');$('otherLine').required=$('line').value==='__other';refreshLocationOptions();updatePreview()});
+$('direction').addEventListener('change',()=>{const wasCustom=$('location').value==='__other';const typed=$('otherLocation').value;refreshLocationOptions();if(wasCustom){$('location').value='__other';$('otherLocation').value=typed;syncManualLocation()}updatePreview()});
+$('location').addEventListener('change',()=>{syncManualLocation();updatePreview()});
+$('otherLocation').addEventListener('input',updatePreview);
+$('severityChoices').addEventListener('click',e=>{const b=e.target.closest('[data-severity]');if(!b)return;severity=b.dataset.severity;document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x===b));updatePreview()});
+['line','otherLine','direction','scope','type','delay','duration','title','detail'].forEach(id=>$(id).addEventListener('input',()=>{clearFieldErrors();updatePreview()}));
+function updatePreview(){const n=line();$('pvLine').textContent=n?lineLabel(n).toUpperCase():'SELECCIONÁ UNA LÍNEA';$('pvTitle').textContent=$('title').value||'Título del aviso';$('pvDetail').textContent=$('detail').value||'Acá se mostrará la explicación para los pasajeros.';$('pvLocation').textContent='⌖ '+(selectedLocation()||'Ubicación pendiente');$('pvDirection').textContent='↔ '+$('direction').value;$('pvSeverity').textContent=severityNames[severity];$('pvSeverity').className='tag '+(severity==='critical'?'critical':severity==='high'||severity==='medium'?'high':'low')}
+function makeCard(n,actions=true){const sev=n.severity||'medium';const statusTag=n.status==='resolved'?'<span class="tag low">NORMALIZADO</span>':n.status==='expired'?'<span class="tag">VENCIDO</span>':'';return `<article class="notice"><div class="stripe ${sev}"></div><div><div class="notice-head"><span class="tag ${sev}">${esc(severityNames[sev]||'MODERADO')}</span><span class="tag">${esc(typeNames[n.type]||n.type)}</span><span class="tag">${esc(lineLabel(n.line))}</span>${statusTag}</div><h3>${esc(n.title)}</h3><p>${esc(n.detail)}</p><div class="notice-meta"><span>⌖ ${esc(n.location)}</span><span>↔ ${esc(n.direction)}</span><span>◷ ${esc(n.createdAt||'')}</span>${n.delay?`<span>⏱ ${esc(n.delay)} min</span>`:''}<span>Vigencia: ${esc(n.duration)}</span></div>${actions?`<div class="notice-actions"><button class="btn outline small" data-edit="${esc(n.id)}">✎ Editar</button>${n.status==='active'?`<button class="btn success small" data-resolve="${esc(n.id)}">✓ Marcar normalizado</button>`:''}<button class="btn outline small" data-detail="${esc(n.id)}">Ver detalles</button></div>`:''}</div></article>`}
+function renderDashboard(){expireOld();const active=notices.filter(n=>n.status==='active');const latest=notices.slice().sort((a,b)=>(b.updatedMs||b.createdMs||0)-(a.updatedMs||a.createdMs||0)).slice(0,4);$('statActive').textContent=active.length;$('statDelay').textContent=active.filter(n=>n.type==='demora').length;$('statUrgent').textContent=active.filter(n=>n.severity==='critical').length;$('statLines').textContent=new Set(active.map(n=>n.line)).size;$('dashboardNotices').innerHTML=latest.length?latest.map(n=>makeCard(n,false)).join(''):'<div class="empty"><div class="big">📭</div><b>Todavía no publicaste avisos</b>Entrá en «Publicar aviso», completá los datos y tocá el botón azul. Tu primer aviso aparecerá acá.</div>'}
+function renderActive(){expireOld();const q=$('filterSearch').value.toLowerCase(),t=$('filterType').value;const items=notices.filter(n=>n.status==='active'&&(!t||n.type===t)&&[n.line,n.title,n.location,n.detail].join(' ').toLowerCase().includes(q)).sort((a,b)=>b.createdMs-a.createdMs);$('activeList').innerHTML=items.length?items.map(n=>makeCard(n,true)).join(''):'<div class="empty"><div class="big">✅</div><b>No hay avisos activos</b>Podés publicar uno nuevo desde la central.</div>'}
+function renderHistory(){expireOld();const items=notices.slice().sort((a,b)=>b.createdMs-a.createdMs);$('historyTable').innerHTML=items.length?`<table class="table"><thead><tr><th>Línea</th><th>Tipo / título</th><th>Zona</th><th>Publicado</th><th>Estado</th></tr></thead><tbody>${items.map(n=>`<tr><td><strong>${esc(n.line)}</strong></td><td>${esc(typeNames[n.type]||n.type)}<br><span style="color:#7b879a">${esc(n.title)}</span></td><td>${esc(n.location)}</td><td>${esc(n.createdAt)}</td><td>${n.status==='active'?'<span class="badge-status">Activo</span>':n.status==='expired'?'<span class="badge-status off">Vencido</span>':'<span class="badge-status off">Normalizado</span>'}</td></tr>`).join('')}</tbody></table>`:'<div class="empty"><div class="big">🗂️</div><b>El historial está vacío</b>Los avisos publicados quedarán registrados acá.</div>'}
+$('filterSearch').addEventListener('input',renderActive);$('filterType').addEventListener('change',renderActive);
+document.addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');if(edit){const n=notices.find(x=>x.id===edit.dataset.edit);if(n){editingId=n.id;$('line').value=routeStops[n.line]?n.line:'__other';$('otherLineWrap').classList.toggle('hidden',$('line').value!=='__other');$('otherLine').required=$('line').value==='__other';$('otherLine').value=routeStops[n.line]?'':n.line;$('direction').value=n.direction;$('scope').value=n.scope;$('type').value=n.type;refreshLocationOptions(n.location);$('delay').value=n.delay||'';$('duration').value=n.duration;$('title').value=n.title;$('detail').value=n.detail;$('notify').checked=!!n.notify;$('showDelay').checked=!!(n.delay);severity=n.severity;document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.severity===severity));$('noticeForm').querySelector('button[type=submit]').textContent='Guardar actualización';updatePreview();go('new')}}const close=e.target.closest('[data-resolve]');if(close){const index=notices.findIndex(x=>x.id===close.dataset.resolve);if(index>=0){const candidate=notices.slice();candidate[index]={...candidate[index],status:'resolved',resolvedAt:now(),resolvedMs:Date.now()};if(save(candidate)){notices=candidate;renderActive();renderDashboard();renderHistory();toast('Aviso marcado como normalizado.')}else{toast('NO SE ACTUALIZÓ: '+storageProblem);showStorageWarning()}}}const det=e.target.closest('[data-detail]');if(det){const n=notices.find(x=>x.id===det.dataset.detail);if(n)alert(`${lineLabel(n.line)}\n${typeNames[n.type]} · ${severityNames[n.severity]}\n${n.title}\n\n${n.detail}\n\nLugar: ${n.location}\nSentido: ${n.direction}\nPublicado: ${n.createdAt}\nVigencia: ${n.duration}`)}});
+$('noticeForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ if(submitting)return;
+ submitting=true;
+ const submitButton=$('noticeForm').querySelector('button[type="submit"]');
+ const originalButtonText=submitButton.textContent;
+ submitButton.disabled=true;submitButton.textContent='Publicando…';
+ try{
+  clearFieldErrors();$('publishResult').classList.add('hidden');
+  const problems=[];let firstInvalid=null;
+  const mark=(id,msg)=>{const el=$(id);const field=el&&el.closest('.field');if(field)field.classList.add('invalid');if(!firstInvalid)firstInvalid=el;problems.push(msg)};
+  const lineValue=$('line').value;
+  const lineIsManual=lineValue==='__other';
+  const selectedLine=lineIsManual?$('otherLine').value.trim():lineValue;
+  const locationSelect=$('location').value;
+  const locationIsManual=lineIsManual||locationSelect==='__other';
+  const selectedPlace=locationIsManual?$('otherLocation').value.trim():locationSelect.trim();
+  const title=$('title').value.trim(),detail=$('detail').value.trim(),delay=$('delay').value.trim();
+  if(!selectedLine)mark(lineIsManual?'otherLine':'line','Te falta elegir el colectivo o escribir el número de línea.');
+  else if(!/^\d{1,8}$/.test(selectedLine))mark(lineIsManual?'otherLine':'line','El número de línea debe tener entre 1 y 8 dígitos.');
+  if(!selectedPlace)mark(locationIsManual?'otherLocation':'location',locationIsManual?'Te falta escribir la calle o ubicación.':'Te falta seleccionar una calle/parada del recorrido o elegir «Otra calle o ubicación».');
+  if(!$('type').value)mark('type','Te falta seleccionar el tipo de aviso.');
+  if(!title)mark('title','Te falta escribir el título del aviso.');
+  if(!detail)mark('detail','Te falta explicar qué pasó y cómo afecta al recorrido.');
+  if(delay&&(Number(delay)<0||Number(delay)>240||!Number.isFinite(Number(delay))))mark('delay','La demora debe ser un número entre 0 y 240 minutos, o dejarse vacía.');
+  if(problems.length){
+   formMessage('⛔ NO SE PUBLICÓ. Te falta completar o corregir:\n'+problems.map((x,i)=>(i+1)+'. '+x).join('\n')+'\n\nLos campos necesarios quedaron marcados en rojo.','error');
+   if(firstInvalid){firstInvalid.focus();firstInvalid.scrollIntoView({behavior:'smooth',block:'center'});}return;
+  }
+  const duration=$('duration').value;
+  const durationMs=duration==='30 minutos'?30*60000:duration==='1 hora'?60*60000:duration==='2 horas'?120*60000:duration==='Todo el día'?24*60*60000:null;
+  const values={line:selectedLine,type:$('type').value,severity,title,detail,location:selectedPlace,direction:$('direction').value,scope:$('scope').value,delay:$('showDelay').checked?delay:'',duration,expiresMs:durationMs?Date.now()+durationMs:null,notify:$('notify').checked};
+  const isEdit=!!editingId;let item;const candidate=notices.slice();
+  if(isEdit){
+   const index=candidate.findIndex(x=>x.id===editingId);
+   if(index<0)throw new Error('No encontramos el aviso que estabas editando. Volvé a cargarlo desde Avisos activos.');
+   item={...candidate[index],...values,updatedAt:now(),updatedMs:Date.now(),status:'active'};candidate[index]=item;
+  }else{
+   item={...values,id:'cb-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),status:'active',createdAt:now(),createdMs:Date.now()};candidate.unshift(item);
+  }
+  // El registro de esta sesión se confirma primero. El almacenamiento persistente es secundario.
+  notices=candidate;
+  const saved=save(candidate);
+  renderDashboard();renderActive();renderHistory();
+  editingId=null;
+  $('publishResultTitle').textContent=isEdit?'✅ Aviso actualizado': '✅ Aviso publicado correctamente';
+  $('publishResultText').textContent=`${lineLabel(item.line)} · ${item.location}. El aviso aparece en Últimos avisos publicados, Avisos activos y el Historial de esta sesión.`+(saved?' También quedó guardado en este navegador.':' ATENCIÓN: no quedó guardado permanentemente: '+(dataProblem||storageProblem));
+  $('publishResult').classList.remove('hidden');
+  $('publishResult').dataset.saved=saved?'yes':'session';
+  $('noticeForm').reset();$('line').value='';$('type').value='';$('otherLineWrap').classList.add('hidden');$('otherLine').required=false;refreshLocationOptions();submitButton.textContent='📣 Publicar aviso';severity='medium';document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.severity==='medium'));clearFieldErrors();updatePreview();
+  formMessage(saved?'✅ Publicado. El aviso quedó guardado y ya figura en las tres secciones.':'⚠️ Publicado en esta sesión. No quedó guardado permanentemente; exportá los datos antes de cerrar la pestaña.','success');
+  go('dashboard');$('publishResult').scrollIntoView({behavior:'smooth',block:'center'});
+ }catch(err){
+  const reason=err&&err.message?err.message:String(err);
+  formMessage('⛔ NO SE PUBLICÓ. Motivo: '+reason+'\nNo se borró lo que completaste. Corregí el problema y volvé a intentar.','error');
+  $('publishResult').classList.add('hidden');
+ }finally{
+  submitting=false;submitButton.disabled=false;
+  if(submitButton.textContent==='Publicando…'||submitButton.textContent==='Guardar actualización')submitButton.textContent=originalButtonText;
+ }
+});
+$('resetForm').addEventListener('click',()=>setTimeout(()=>{editingId=null;$('noticeForm').querySelector('button[type=submit]').textContent='📣 Publicar aviso';clearFieldErrors();formMessage('Completá los datos y tocá «Publicar aviso». Si falta algo, te vamos a indicar qué campo corregir.','info');severity='medium';document.querySelectorAll('.choice').forEach(x=>x.classList.toggle('selected',x.dataset.severity==='medium'));$('line').value='';$('type').value='';$('otherLineWrap').classList.add('hidden');$('otherLine').required=false;refreshLocationOptions();updatePreview()},0));
+function exportData(){const blob=new Blob([JSON.stringify({app:'Central ConectaBus',exportedAt:new Date().toISOString(),notices},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Central_ConectaBus_avisos.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Datos exportados.')}
+$('exportBtn').addEventListener('click',exportData);$('exportJson').addEventListener('click',exportData);
+function applyTheme(theme,persist=true){
+ const chosen=theme==='light'?'light':'dark';document.documentElement.setAttribute('data-theme',chosen);
+ if($('themeSelect'))$('themeSelect').value=chosen;
+ if($('themeBadge'))$('themeBadge').textContent=(chosen==='dark'?'MODO OSCURO':'MODO CLARO')+' · PRUEBA LOCAL';
+ if($('themeStatus'))$('themeStatus').textContent=chosen==='dark'?'El modo oscuro está activado.':'El modo claro está activado.';
+ if(persist){try{window.localStorage.setItem('central_conectabus_theme_v1',chosen);}catch(e){$('themeStatus').textContent=(chosen==='dark'?'Modo oscuro':'Modo claro')+' activado solo en esta pestaña; el navegador no permitió guardar la preferencia.';}}
+}
+let initialTheme='dark';try{const savedTheme=window.localStorage.getItem('central_conectabus_theme_v1');if(savedTheme==='light'||savedTheme==='dark')initialTheme=savedTheme;}catch(e){}
+applyTheme(initialTheme,false);
+$('themeSelect').addEventListener('change',e=>applyTheme(e.target.value,true));
+refreshLocationOptions();$('otherLine').required=false;checkStorage();showStorageWarning();formMessage(dataProblem?'⚠️ '+dataProblem:persistenceMode==='memory'?'⚠️ Modo temporal: podés publicar, pero los avisos pueden perderse al cerrar o recargar.':'Completá los datos y tocá «Publicar aviso». Si falta algo, te vamos a indicar qué campo corregir.',dataProblem||persistenceMode==='memory'?'error':'info');updatePreview();renderDashboard();
+window.addEventListener('error',event=>{const reason=event.message||'Error inesperado del programa';formMessage('⛔ NO SE COMPLETÓ LA OPERACIÓN: '+reason+'. No se confirmó la publicación. Revisá los datos y volvé a intentar.','error');});
+window.addEventListener('unhandledrejection',event=>{const reason=event.reason&&event.reason.message?event.reason.message:String(event.reason||'Error inesperado');formMessage('⛔ NO SE COMPLETÓ LA OPERACIÓN: '+reason+'. No se confirmó la publicación.','error');});
+})();
+</script>
+</body></html>
